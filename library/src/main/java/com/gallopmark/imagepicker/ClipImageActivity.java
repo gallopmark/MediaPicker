@@ -18,7 +18,7 @@ import com.gallopmark.imagepicker.widget.ClipImageView;
 import java.io.File;
 import java.util.ArrayList;
 
-public class ClipImageActivity extends ImageActivity {
+public class ClipImageActivity extends ImageCommonActivity {
     private ClipImageView mClipImageView;
     private int mRequestCode;
     private boolean isCameraImage;

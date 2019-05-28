@@ -24,7 +24,7 @@ import com.gallopmark.imagepicker.widget.OnRecyclerViewPageChangedListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ImagePreviewActivity extends ImageActivity implements ImagePreviewView {
+public class ImagePreviewActivity extends ImageCommonActivity implements ImagePreviewView {
     private FrameLayout mContainer;
     private Toolbar toolBar;
     private TextView mTitleTv;
@@ -199,12 +199,14 @@ public class ImagePreviewActivity extends ImageActivity implements ImagePreviewV
                     }
                     setUnCheckItem();
                 } else {
+                    /*单选情况下 清空已选图片再添加选中图片*/
                     if (isSingle) {
                         mSelectImages.clear();
                         mSelectImages.add(imageItem);
                         setCheckItem();
                     } else {
-                        if (mSelectImages.size() < mMaxCount) {
+                        /*未指定maxCount 或者选择的数量没有超过maxCount*/
+                        if (mMaxCount == 0 || mSelectImages.size() < mMaxCount) {
                             mSelectImages.add(imageItem);
                             setCheckItem();
                         }
@@ -215,6 +217,7 @@ public class ImagePreviewActivity extends ImageActivity implements ImagePreviewV
         });
     }
 
+    /*获取recyclerView当前滚动的位置*/
     private int getCurrentItem() {
         RecyclerView.LayoutManager layoutManager = mPagerRecyclerView.getLayoutManager();
         if (layoutManager == null) return -1;

@@ -10,7 +10,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Window;
 
-public abstract class ImageActivity extends AppCompatActivity {
+public abstract class ImageCommonActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -24,10 +24,13 @@ public abstract class ImageActivity extends AppCompatActivity {
     private void setupToolbar() {
         Toolbar toolbar = findViewById(R.id.toolBar);
         if (toolbar != null) {
+            toolbar.setTitle("");
             Drawable navigationIcon = ContextCompat.getDrawable(this, R.drawable.icon_back);
-            if (navigationIcon != null)
+            if (navigationIcon != null) {
                 navigationIcon.setColorFilter(ContextCompat.getColor(this, R.color.white), PorterDuff.Mode.SRC_ATOP);
+            }
             toolbar.setNavigationIcon(navigationIcon);
+            setSupportActionBar(toolbar);
             toolbar.setNavigationOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

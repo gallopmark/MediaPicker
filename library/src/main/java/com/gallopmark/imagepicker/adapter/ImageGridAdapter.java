@@ -240,8 +240,6 @@ public class ImageGridAdapter extends RecyclerView.Adapter<BaseViewHolder> {
     }
 
     public interface OnItemSelectListener {
-        void onOverSelected(int limit);
-
         void onSelected(List<ImageItem> mSelectImages);
     }
 

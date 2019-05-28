@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class ImagePickerActivity extends ImageActivity implements View.OnClickListener, ImagePickerView {
+public class ImagePickerActivity extends ImageCommonActivity implements View.OnClickListener, ImagePickerView {
 
     private Toolbar toolBar;
     private FrameLayout mConfirmLayout;
@@ -208,11 +208,6 @@ public class ImagePickerActivity extends ImageActivity implements View.OnClickLi
         mGridAdapter = new ImageGridAdapter(this, mMaxCount, isSingle, isViewImage);
         mImageRv.setAdapter(mGridAdapter);
         mGridAdapter.setOnItemSelectListener(new ImageGridAdapter.OnItemSelectListener() {
-            @Override
-            public void onOverSelected(int limit) {
-
-            }
-
             @Override
             public void onSelected(List<ImageItem> mSelectImages) {
                 setSelectImageCount(mSelectImages.size());
