@@ -1,0 +1,20 @@
+<resources>
+    <string name="imagePicker_allPictures">全部图片</string>
+    <string name="imagePicker_title">图片</string>
+    <string name="imagePicker_confirm">确定</string>
+    <string name="imagePicker_preview">预览</string>
+    <string name="imagePicker_select">选择</string>
+
+    <string name="imagePicker_dismiss_sdcard">禁止存储权限应用无法读取系统相册，请重新打开</string>
+    <string name="imagePicker_noSdcard">存储权限已被禁止，应用无法读取系统相册,如需打开请点“确定”</string>
+    <string name="imagePicker_noCamera">相机权限已被禁止，应用无法启动照相机，如需打开请点“确定”</string>
+    <string name="imagePicker_dismiss_camera">禁止相机权限应用无法启动相机，请重新打开</string>
+
+    <string name="imagePicker_time_today">今天</string>
+    <string name="imagePicker_time_currentWeek">本周</string>
+    <string name="imagePicker_time_currentMonth">本月</string>
+    <string name="imagePicker_dialog_title">提示</string>
+    <string name="imagePicker_dialog_confirm">确定</string>
+    <string name="imagePicker_dialog_cancel">取消</string>
+
+</resources>

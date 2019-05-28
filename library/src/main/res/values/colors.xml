@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="stylePrimary">#373c3d</color>
+    <color name="stylePrimaryDark">#373c3d</color>
+    <color name="styleAccent">#669900</color>
+
+    <color name="colorPressed">#95373c3d</color>
+    <color name="colorUnEnabled">#95373c3d</color>
+    <color name="colorTransparent">#00000000</color>
+    <color name="time_background">#9e111212</color>
+    <color name="colorMasking">#111212</color>
+
+    <color name="default_background">#010101</color>
+
+    <color name="gainsboro">#757575</color><!--淡灰色 -->
+    <color name="itemDivider">#ffedeeef</color>
+    <color name="translucence">#80000000</color>
+    <color name="white">#ffffff</color>
+    <color name="black">#000000</color>
+
+    <color name="whitetransparent">#b3ffffff</color>
+</resources>

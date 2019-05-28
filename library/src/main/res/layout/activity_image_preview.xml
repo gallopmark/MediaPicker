@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/mContainer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/stylePrimary">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/mPagerRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        app:layoutManager="android.support.v7.widget.LinearLayoutManager" />
+
+    <include layout="@layout/toolbar_layout" />
+
+    <LinearLayout
+        android:id="@+id/llBottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="@color/translucence"
+        android:clickable="true"
+        android:focusable="true"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/mSelectTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_margin="@dimen/dp_10"
+            android:drawableStart="@drawable/icon_image_un_select"
+            android:drawableLeft="@drawable/icon_image_un_select"
+            android:drawablePadding="@dimen/dp_5"
+            android:gravity="center"
+            android:padding="@dimen/dp_5"
+            android:text="@string/imagePicker_select"
+            android:textColor="@color/white"
+            android:textSize="@dimen/sp_16" />
+    </LinearLayout>
+</FrameLayout>

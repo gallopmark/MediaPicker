@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/toolBar"
+    style="@style/ToolBarStyle">
+
+    <TextView
+        android:id="@+id/mTitleTv"
+        style="@style/ToolbarTitleStyle"
+        android:text="@string/imagePicker_title" />
+
+    <FrameLayout
+        android:id="@+id/mConfirmLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|center"
+        android:layout_marginEnd="@dimen/toolbar_confirm_margin"
+        android:layout_marginRight="@dimen/toolbar_confirm_margin"
+        android:foreground="@drawable/bg_foreground_corners3dp_selector">
+
+        <TextView
+            android:id="@+id/mConfirmTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_green_shape_3dp"
+            android:gravity="center"
+            android:minWidth="@dimen/toolbar_confirm_viewMinWidth"
+            android:padding="@dimen/dp_5"
+            android:text="@string/imagePicker_confirm"
+            android:textColor="@color/white"
+            android:textSize="@dimen/sp_14" />
+    </FrameLayout>
+</android.support.v7.widget.Toolbar>
