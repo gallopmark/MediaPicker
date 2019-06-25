@@ -1,20 +1,16 @@
 package com.gallopmark.imagepicker.adapter;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.RequestOptions;
 import com.gallopmark.imagepicker.R;
 import com.gallopmark.imagepicker.bean.ImageItem;
+import com.gallopmark.imagepicker.model.ImageSource;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +24,7 @@ public class ImageGridAdapter extends RecyclerView.Adapter<BaseViewHolder> {
     private int mMaxCount;
     private boolean isSingle;
     private boolean isViewImage;
-    private boolean useCamera;
+    private boolean isUseCamera;
 
     private OnItemClickListener onItemClickListener;
     private OnItemSelectListener onItemSelectListener;
@@ -41,17 +37,17 @@ public class ImageGridAdapter extends RecyclerView.Adapter<BaseViewHolder> {
      * @param isViewImage 是否点击放大图片查看
      */
     public ImageGridAdapter(Context context, int maxCount, boolean isSingle, boolean isViewImage) {
-        mContext = context;
+        this.mContext = context;
         this.mInflater = LayoutInflater.from(mContext);
-        mMaxCount = maxCount;
+        this.mMaxCount = maxCount;
         this.isSingle = isSingle;
         this.isViewImage = isViewImage;
-        mSelectedItems = new ArrayList<>();
+        this.mSelectedItems = new ArrayList<>();
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (useCamera && position == 0) {
+        if (isUseCamera && position == 0) {
             return TYPE_CAMERA;
         } else {
             return TYPE_IMAGE;
@@ -85,9 +81,10 @@ public class ImageGridAdapter extends RecyclerView.Adapter<BaseViewHolder> {
         } else {
             final ImageItem imageItem = getImageItem(position);
             final ImageViewHolder holder = (ImageViewHolder) viewHolder;
-            Glide.with(mContext).load(new File(imageItem.getPath()))
-                    .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.NONE))
-                    .into(holder.mImageView);
+            ImageSource.getInstance().getDisplacer().displayGrid(mContext, imageItem.getPath(), holder.mImageView);
+//            Glide.with(mContext).load(new File(imageItem.getPath()))
+//                    .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.NONE))
+//                    .into(holder.mImageView);
             holder.mGifImageView.setVisibility(imageItem.isGif() ? View.VISIBLE : View.GONE);
             setItemSelect(holder, mSelectedItems.contains(imageItem));
             holder.mSelectedIv.setOnClickListener(new View.OnClickListener() {
@@ -102,7 +99,7 @@ public class ImageGridAdapter extends RecyclerView.Adapter<BaseViewHolder> {
                     if (isViewImage) {
                         if (onItemClickListener != null) {
                             int adapterPosition = holder.getAdapterPosition();
-                            onItemClickListener.onItemClick(imageItem, useCamera ? adapterPosition - 1 : adapterPosition);
+                            onItemClickListener.onItemClick(imageItem, isUseCamera ? adapterPosition - 1 : adapterPosition);
                         }
                     } else {
                         checkedImage(holder, imageItem);
@@ -138,7 +135,7 @@ public class ImageGridAdapter extends RecyclerView.Adapter<BaseViewHolder> {
             int index = mImages.indexOf(mSelectedItems.get(0));
             mSelectedItems.clear();
             if (index != -1) {
-                notifyItemChanged(useCamera ? index + 1 : index);
+                notifyItemChanged(isUseCamera ? index + 1 : index);
             }
         }
     }
@@ -160,12 +157,12 @@ public class ImageGridAdapter extends RecyclerView.Adapter<BaseViewHolder> {
     }
 
     private ImageItem getImageItem(int position) {
-        return mImages.get(useCamera ? position - 1 : position);
+        return mImages.get(isUseCamera ? position - 1 : position);
     }
 
     @Override
     public int getItemCount() {
-        return useCamera ? getImageCount() + 1 : getImageCount();
+        return isUseCamera ? getImageCount() + 1 : getImageCount();
     }
 
     private int getImageCount() {
@@ -174,7 +171,7 @@ public class ImageGridAdapter extends RecyclerView.Adapter<BaseViewHolder> {
 
     public ImageItem getFirstVisibleImage(int firstVisibleItem) {
         if (mImages != null && !mImages.isEmpty()) {
-            if (useCamera) {
+            if (isUseCamera) {
                 return mImages.get(firstVisibleItem == 0 ? 0 : firstVisibleItem - 1);
             } else {
                 return mImages.get(firstVisibleItem);
@@ -185,7 +182,7 @@ public class ImageGridAdapter extends RecyclerView.Adapter<BaseViewHolder> {
 
     public void refresh(@NonNull ArrayList<ImageItem> data, boolean useCamera) {
         mImages = data;
-        this.useCamera = useCamera;
+        this.isUseCamera = useCamera;
         notifyDataSetChanged();
     }
 

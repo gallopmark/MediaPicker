@@ -1,6 +1,6 @@
 package com.gallopmark.imagepicker.bean;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.gallopmark.imagepicker.utils.StringUtils;
 

@@ -7,9 +7,10 @@ import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Environment;
-import android.support.v4.content.FileProvider;
-import android.support.v4.os.EnvironmentCompat;
 import android.util.Log;
+
+import androidx.core.content.FileProvider;
+import androidx.core.os.EnvironmentCompat;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -55,8 +56,8 @@ public class ImageUtil {
 //        String name = new DateFormat().format("yyyyMMdd_hhmmss", Calendar.getInstance(Locale.CHINA)) + ".png";
         FileOutputStream b = null;
         File file = new File(path);
-        if (!file.exists()) {
-            file.mkdirs();// 创建文件夹
+        if (!file.exists() && !file.mkdirs()) {
+            return "";
         }
         String fileName = path + File.separator + filename;
         try {
@@ -141,9 +142,10 @@ public class ImageUtil {
 
     /**
      * 旋转图片
+     *
      * @return Bitmap
      */
-    public static Bitmap rotateImageView(Bitmap bitmap, int angle) {
+    private static Bitmap rotateImageView(Bitmap bitmap, int angle) {
         //旋转图片 动作
         Matrix matrix = new Matrix();
         matrix.postRotate(angle);

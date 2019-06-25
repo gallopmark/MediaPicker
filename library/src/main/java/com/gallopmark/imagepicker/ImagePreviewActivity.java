@@ -4,33 +4,32 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.PagerSnapHelper;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.viewpager.widget.ViewPager;
+import androidx.appcompat.widget.Toolbar;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.gallopmark.imagepicker.adapter.ImagePageAdapter;
+import com.gallopmark.imagepicker.adapter.ImagePagerAdapter;
 import com.gallopmark.imagepicker.bean.ImageItem;
 import com.gallopmark.imagepicker.model.ImagePicker;
 import com.gallopmark.imagepicker.presenter.ImagePreviewPresenter;
 import com.gallopmark.imagepicker.view.ImagePreviewView;
-import com.gallopmark.imagepicker.widget.OnRecyclerViewPageChangedListener;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ImagePreviewActivity extends ImageCommonActivity implements ImagePreviewView {
+/*图片预览页面*/
+public class ImagePreviewActivity extends BaseActivity implements ImagePreviewView {
     private FrameLayout mContainer;
     private Toolbar toolBar;
     private TextView mTitleTv;
     private FrameLayout mConfirmLayout;
     private TextView mConfirmTv;
-    private RecyclerView mPagerRecyclerView;
+    private ViewPager mViewPager;
     private LinearLayout llBottom;
     private TextView mSelectTextView;
 
@@ -53,18 +52,25 @@ public class ImagePreviewActivity extends ImageCommonActivity implements ImagePr
     private ImagePreviewPresenter mPresenter;
     private boolean isConfirm = false;
 
-    private PagerSnapHelper pagerSnapHelper;
-
     public static void openActivity(Activity activity, List<ImageItem> images,
                                     List<ImageItem> selectImages, boolean isSingle,
                                     int maxSelectCount, int position) {
         tempImages = images;
         tempSelectImages = selectImages;
         Intent intent = new Intent(activity, ImagePreviewActivity.class);
-        intent.putExtra(ImagePicker.MAX_SELECT_COUNT, maxSelectCount);
-        intent.putExtra(ImagePicker.IS_SINGLE, isSingle);
-        intent.putExtra(ImagePicker.POSITION, position);
+        intent.putExtras(dataPackages(images, selectImages, isSingle, maxSelectCount, position));
         activity.startActivityForResult(intent, ImagePicker.PREVIEW_RESULT_CODE);
+    }
+
+    private static Bundle dataPackages(List<ImageItem> images, List<ImageItem> selectImages, boolean isSingle,
+                                       int maxSelectCount, int position) {
+        tempImages = images;
+        tempSelectImages = selectImages;
+        Bundle bundle = new Bundle();
+        bundle.putInt(ImagePicker.MAX_SELECT_COUNT, maxSelectCount);
+        bundle.putBoolean(ImagePicker.IS_SINGLE, isSingle);
+        bundle.putInt(ImagePicker.POSITION, position);
+        return bundle;
     }
 
     @Override
@@ -102,7 +108,7 @@ public class ImagePreviewActivity extends ImageCommonActivity implements ImagePr
         mTitleTv = findViewById(R.id.mTitleTv);
         mConfirmLayout = findViewById(R.id.mConfirmLayout);
         mConfirmTv = findViewById(R.id.mConfirmTv);
-        mPagerRecyclerView = findViewById(R.id.mPagerRecyclerView);
+        mViewPager = findViewById(R.id.mViewPager);
         llBottom = findViewById(R.id.llBottom);
         mSelectTextView = findViewById(R.id.mSelectTextView);
         mSelectDrawable = ContextCompat.getDrawable(this, R.drawable.icon_image_select);
@@ -132,11 +138,9 @@ public class ImagePreviewActivity extends ImageCommonActivity implements ImagePr
 
     @Override
     public void initViewPager() {
-        pagerSnapHelper = new PagerSnapHelper();
-        pagerSnapHelper.attachToRecyclerView(mPagerRecyclerView);
-        final ImagePageAdapter pageAdapter = new ImagePageAdapter(this, mImages);
-        mPagerRecyclerView.setAdapter(pageAdapter);
-        pageAdapter.setOnItemClickListener(new ImagePageAdapter.OnItemClickListener() {
+        ImagePagerAdapter pagerAdapter = new ImagePagerAdapter(this, mImages);
+        mViewPager.setAdapter(pagerAdapter);
+        pagerAdapter.setOnItemClickListener(new ImagePagerAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position, ImageItem imageItem) {
                 if (isShowBar) {
@@ -148,14 +152,9 @@ public class ImagePreviewActivity extends ImageCommonActivity implements ImagePr
                 }
             }
         });
-        mPagerRecyclerView.addOnScrollListener(new OnRecyclerViewPageChangedListener(pagerSnapHelper, new OnRecyclerViewPageChangedListener.OnPageChangeListener() {
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-
-            }
-
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            public void onPageScrolled(int i, float v, int i1) {
 
             }
 
@@ -164,10 +163,15 @@ public class ImagePreviewActivity extends ImageCommonActivity implements ImagePr
                 setTitle((position + 1) + "/" + mImages.size());
                 setCheckStatus(position);
             }
-        }));
+
+            @Override
+            public void onPageScrollStateChanged(int i) {
+
+            }
+        });
         int initPosition = getIntent().getIntExtra(ImagePicker.POSITION, 0);
         setCheckStatus(initPosition);
-        mPagerRecyclerView.scrollToPosition(initPosition);
+        mViewPager.setCurrentItem(initPosition);
     }
 
     @Override
@@ -188,7 +192,7 @@ public class ImagePreviewActivity extends ImageCommonActivity implements ImagePr
         mSelectTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int currentItem = getCurrentItem();
+                int currentItem = mViewPager.getCurrentItem();
                 if (currentItem < 0 || currentItem > mImages.size()) return;
                 ImageItem imageItem = mImages.get(currentItem);
                 if (mSelectImages.contains(imageItem)) {
@@ -215,18 +219,6 @@ public class ImagePreviewActivity extends ImageCommonActivity implements ImagePr
                 setConfirm(mSelectImages.size());
             }
         });
-    }
-
-    /*获取recyclerView当前滚动的位置*/
-    private int getCurrentItem() {
-        RecyclerView.LayoutManager layoutManager = mPagerRecyclerView.getLayoutManager();
-        if (layoutManager == null) return -1;
-        View view = pagerSnapHelper.findSnapView(layoutManager);
-        if (view != null) {
-            //获取itemView的position
-            return layoutManager.getPosition(view);
-        }
-        return -1;
     }
 
     private void setCheckStatus(int position) {

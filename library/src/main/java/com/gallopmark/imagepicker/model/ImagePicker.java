@@ -1,10 +1,11 @@
 package com.gallopmark.imagepicker.model;
 
 import android.app.Activity;
-import android.support.v4.app.Fragment;
+import androidx.fragment.app.Fragment;
 
 import com.gallopmark.imagepicker.ClipImageActivity;
 import com.gallopmark.imagepicker.ImagePickerActivity;
+import com.gallopmark.imagepicker.loader.ImageLoader;
 
 import java.util.ArrayList;
 
@@ -32,7 +33,7 @@ public class ImagePicker {
     //是否使用拍照功能
     public static final String USE_CAMERA = "is_camera";
     //原来已选择的图片
-    public static final String SELECTED = "selected";
+    public static final String SELECTED = "mSelected";
     //初始位置
     public static final String POSITION = "position";
 
@@ -41,6 +42,28 @@ public class ImagePicker {
     /*图片预览请求码*/
     public static final int PREVIEW_RESULT_CODE = 996;
 
+
+    private boolean isCrop = false;
+    private boolean isUseCamera = true;
+    private boolean isSingle = false;
+    private boolean isViewImage = true;
+    private int mMaxSelectCount;
+    private ArrayList<String> mSelected;
+
+    private ImagePicker() {
+
+    }
+
+    ImagePicker(ImagePickerBuilder builder) {
+        this.isCrop = builder.isCrop;
+        this.isUseCamera = builder.isUseCamera;
+        this.isSingle = builder.isSingle;
+        this.isViewImage = builder.isViewImage;
+        this.mMaxSelectCount = builder.mMaxSelectCount;
+        this.mSelected = builder.selected;
+        ImageSource.getInstance().setDisplacer(builder.mImageLoader);
+    }
+
     public static ImagePickerBuilder builder() {
         return new ImagePickerBuilder();
     }
@@ -48,16 +71,17 @@ public class ImagePicker {
     public static class ImagePickerBuilder {
 
         private boolean isCrop = false;
-        private boolean useCamera = true;
+        private boolean isUseCamera = true;
         private boolean isSingle = false;
         private boolean isViewImage = true;
-        private int maxSelectCount;
+        private int mMaxSelectCount;
         private ArrayList<String> selected;
+        private ImageLoader mImageLoader;
 
         /**
          * 是否使用图片剪切功能。默认false。如果使用了图片剪切功能，相册只能单选。
          */
-        public ImagePickerBuilder setCrop(boolean isCrop) {
+        public ImagePickerBuilder isCrop(boolean isCrop) {
             this.isCrop = isCrop;
             return this;
         }
@@ -65,7 +89,7 @@ public class ImagePicker {
         /**
          * 是否单选
          */
-        public ImagePickerBuilder setSingle(boolean isSingle) {
+        public ImagePickerBuilder isSingle(boolean isSingle) {
             this.isSingle = isSingle;
             return this;
         }
@@ -73,7 +97,7 @@ public class ImagePicker {
         /**
          * 是否点击放大图片查看,，默认为true
          */
-        public ImagePickerBuilder setViewImage(boolean isViewImage) {
+        public ImagePickerBuilder isViewImage(boolean isViewImage) {
             this.isViewImage = isViewImage;
             return this;
         }
@@ -81,16 +105,16 @@ public class ImagePicker {
         /**
          * 是否使用拍照功能。
          */
-        public ImagePickerBuilder useCamera(boolean useCamera) {
-            this.useCamera = useCamera;
+        public ImagePickerBuilder isUseCamera(boolean useCamera) {
+            this.isUseCamera = useCamera;
             return this;
         }
 
         /**
          * 图片的最大选择数量，小于等于0时，不限数量，isSingle为false时才有用。
          */
-        public ImagePickerBuilder setMaxSelectCount(int maxSelectCount) {
-            this.maxSelectCount = maxSelectCount;
+        public ImagePickerBuilder maxSelectCount(int maxSelectCount) {
+            this.mMaxSelectCount = maxSelectCount;
             return this;
         }
 
@@ -98,51 +122,63 @@ public class ImagePicker {
          * 接收从外面传进来的已选择的图片列表。当用户原来已经有选择过图片，现在重新打开
          * 选择器，允许用户把先前选过的图片传进来，并把这些图片默认为选中状态。
          */
-        public ImagePickerBuilder setSelected(ArrayList<String> selected) {
+        public ImagePickerBuilder selected(ArrayList<String> selected) {
             this.selected = selected;
             return this;
         }
 
-        public void start(Activity activity) {
-            start(activity, DEFAULT_REQUEST_CODE);
-        }
-
         /**
-         * 打开相册
+         * 设置图片加载器
          */
-        public void start(Activity activity, int requestCode) {
-            if (isCrop) {
-                ClipImageActivity.openActivity(activity, requestCode, isViewImage, useCamera, selected);
-            } else {
-                ImagePickerActivity.openActivity(activity, requestCode, isSingle, isViewImage, useCamera, maxSelectCount, selected);
-            }
+        public ImagePickerBuilder imageLoader(ImageLoader imageLoader) {
+            this.mImageLoader = imageLoader;
+            return this;
         }
 
-        public void start(Fragment fragment) {
-            start(fragment, DEFAULT_REQUEST_CODE);
+        public ImagePicker create() {
+            return new ImagePicker(this);
         }
+    }
 
-        /**
-         * 打开相册
-         */
-        public void start(Fragment fragment, int requestCode) {
-            if (isCrop) {
-                ClipImageActivity.openActivity(fragment, requestCode, isViewImage, useCamera, selected);
-            } else {
-                ImagePickerActivity.openActivity(fragment, requestCode, isSingle, isViewImage, useCamera, maxSelectCount, selected);
-            }
+    public void start(Activity activity) {
+        start(activity, DEFAULT_REQUEST_CODE);
+    }
+
+    /**
+     * 打开相册
+     */
+    public void start(Activity activity, int requestCode) {
+        if (isCrop) {
+            ClipImageActivity.openActivity(activity, requestCode, isViewImage, isUseCamera, mSelected);
+        } else {
+            ImagePickerActivity.openActivity(activity, requestCode, isSingle, isViewImage, isUseCamera, mMaxSelectCount, mSelected);
         }
+    }
 
-        public void start(android.app.Fragment fragment) {
-            start(fragment, DEFAULT_REQUEST_CODE);
+    public void start(Fragment fragment) {
+        start(fragment, DEFAULT_REQUEST_CODE);
+    }
+
+    /**
+     * 打开相册
+     */
+    public void start(Fragment fragment, int requestCode) {
+        if (isCrop) {
+            ClipImageActivity.openActivity(fragment, requestCode, isViewImage, isUseCamera, mSelected);
+        } else {
+            ImagePickerActivity.openActivity(fragment, requestCode, isSingle, isViewImage, isUseCamera, mMaxSelectCount, mSelected);
         }
+    }
 
-        public void start(android.app.Fragment fragment, int requestCode) {
-            if (isCrop) {
-                ClipImageActivity.openActivity(fragment, requestCode, isViewImage, useCamera, selected);
-            } else {
-                ImagePickerActivity.openActivity(fragment, requestCode, isSingle, isViewImage, useCamera, maxSelectCount, selected);
-            }
+    public void start(android.app.Fragment fragment) {
+        start(fragment, DEFAULT_REQUEST_CODE);
+    }
+
+    public void start(android.app.Fragment fragment, int requestCode) {
+        if (isCrop) {
+            ClipImageActivity.openActivity(fragment, requestCode, isViewImage, isUseCamera, mSelected);
+        } else {
+            ImagePickerActivity.openActivity(fragment, requestCode, isSingle, isViewImage, isUseCamera, mMaxSelectCount, mSelected);
         }
     }
 }

@@ -11,6 +11,8 @@ import android.text.TextUtils;
 import com.gallopmark.imagepicker.R;
 import com.gallopmark.imagepicker.bean.ImageFolder;
 import com.gallopmark.imagepicker.bean.ImageItem;
+import com.gallopmark.imagepicker.loader.DefaultImageLoader;
+import com.gallopmark.imagepicker.loader.ImageLoader;
 import com.gallopmark.imagepicker.utils.StringUtils;
 
 import java.io.File;
@@ -19,10 +21,39 @@ import java.util.Collections;
 import java.util.List;
 
 public class ImageSource {
+
+    private volatile static ImageSource mInstance;
+    private ImageLoader mImageLoader;
+
+    private ImageSource() {
+
+    }
+
+    public static ImageSource getInstance() {
+        if (mInstance == null) {
+            synchronized (ImageSource.class) {
+                if (mInstance == null) {
+                    mInstance = new ImageSource();
+                }
+            }
+        }
+        return mInstance;
+    }
+
+    /*设置图片加载器*/
+    void setDisplacer(ImageLoader imageLoader) {
+        this.mImageLoader = imageLoader;
+    }
+
+    /*如果未设置图片加载器，则使用默认图片加载器（项目中需要引用glide图片加载库）*/
+    public ImageLoader getDisplacer() {
+        return mImageLoader == null ? new DefaultImageLoader() : mImageLoader;
+    }
+
     /**
      * 从SDCard加载图片
      */
-    public static void loadImageForSDCard(final Context context, final OnGetImageCallback callback) {
+    public void loadImageForSDCard(final Context context, final OnGetImageCallback callback) {
         //由于扫描图片是耗时的操作，所以要在子线程处理。
         new Thread(new Runnable() {
             @Override
@@ -122,7 +153,7 @@ public class ImageSource {
             int size = folders.size();
             for (int i = 0; i < size; i++) {
                 ImageFolder folder = folders.get(i);
-                if(TextUtils.equals(folder.getName(),name)){
+                if (TextUtils.equals(folder.getName(), name)) {
                     return folder;
                 }
             }

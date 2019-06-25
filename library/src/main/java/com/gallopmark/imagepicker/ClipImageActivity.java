@@ -4,9 +4,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.Toolbar;
+
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.appcompat.widget.Toolbar;
+
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -18,7 +20,7 @@ import com.gallopmark.imagepicker.widget.ClipImageView;
 import java.io.File;
 import java.util.ArrayList;
 
-public class ClipImageActivity extends ImageCommonActivity {
+public class ClipImageActivity extends BaseActivity {
     private ClipImageView mClipImageView;
     private int mRequestCode;
     private boolean isCameraImage;
@@ -31,7 +33,7 @@ public class ClipImageActivity extends ImageCommonActivity {
     }
 
     public static void openActivity(Fragment fragment, int requestCode, boolean isViewImage,
-                                   boolean useCamera, ArrayList<String> selected) {
+                                    boolean useCamera, ArrayList<String> selected) {
         if (fragment.getActivity() == null) return;
         Intent intent = new Intent(fragment.getContext(), ClipImageActivity.class);
         intent.putExtras(dataPackages(requestCode, isViewImage, useCamera, selected));
@@ -122,7 +124,8 @@ public class ClipImageActivity extends ImageCommonActivity {
     private void confirm(Bitmap bitmap) {
         String imagePath = null;
         if (bitmap != null) {
-            imagePath = ImageUtil.saveImage(bitmap, getCacheDir().getPath() + File.separator + "image_select");
+            String savePath = getExternalCacheDir() == null ? getCacheDir().getPath() : getExternalCacheDir().getPath();
+            imagePath = ImageUtil.saveImage(bitmap, savePath + File.separator + "image_select");
             bitmap.recycle();
         }
         if (StringUtils.isNotEmptyString(imagePath)) {

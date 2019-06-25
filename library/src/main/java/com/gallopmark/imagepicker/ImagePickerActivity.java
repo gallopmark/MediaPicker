@@ -3,12 +3,13 @@ package com.gallopmark.imagepicker;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.appcompat.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -18,15 +19,15 @@ import com.gallopmark.imagepicker.adapter.ImageFolderAdapter;
 import com.gallopmark.imagepicker.adapter.ImageGridAdapter;
 import com.gallopmark.imagepicker.bean.ImageFolder;
 import com.gallopmark.imagepicker.bean.ImageItem;
-import com.gallopmark.imagepicker.presenter.ImagePickerPresenter;
 import com.gallopmark.imagepicker.model.ImagePicker;
+import com.gallopmark.imagepicker.presenter.ImagePickerPresenter;
 import com.gallopmark.imagepicker.view.ImagePickerView;
 
 import java.util.ArrayList;
 import java.util.List;
 
-
-public class ImagePickerActivity extends ImageCommonActivity implements View.OnClickListener, ImagePickerView {
+/*图片选择页面*/
+public class ImagePickerActivity extends BaseActivity implements View.OnClickListener, ImagePickerView {
 
     private Toolbar toolBar;
     private FrameLayout mConfirmLayout;
@@ -44,7 +45,7 @@ public class ImagePickerActivity extends ImageCommonActivity implements View.OnC
     private boolean isViewImage = true;
     private int mMaxCount;
 
-    private boolean useCamera = true;
+    private boolean isUseCamera = true;
 
     //用于接收从外面传进来的已选择的图片列表。当用户原来已经有选择过图片，现在重新打开选择器，允许用
     // 户把先前选过的图片传进来，并把这些图片默认为选中状态。
@@ -149,7 +150,7 @@ public class ImagePickerActivity extends ImageCommonActivity implements View.OnC
             mMaxCount = bundle.getInt(ImagePicker.MAX_SELECT_COUNT, 0);
             isSingle = bundle.getBoolean(ImagePicker.IS_SINGLE, false);
             isViewImage = bundle.getBoolean(ImagePicker.IS_VIEW_IMAGE, true);
-            useCamera = bundle.getBoolean(ImagePicker.USE_CAMERA, true);
+            isUseCamera = bundle.getBoolean(ImagePicker.USE_CAMERA, true);
             if (mTempSelectImages != null) {
                 this.mSelectedImages = new ArrayList<>();
                 for (String path : mTempSelectImages) {
@@ -174,6 +175,11 @@ public class ImagePickerActivity extends ImageCommonActivity implements View.OnC
         mFolderNameTv = findViewById(R.id.mFolderNameTv);
         mPreviewLayout = findViewById(R.id.mPreviewLayout);
         mPreviewTv = findViewById(R.id.mPreviewTv);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 3);
+        mImageRv.setLayoutManager(gridLayoutManager);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
+        mFolderRv.setLayoutManager(linearLayoutManager);
     }
 
     @Override
@@ -235,7 +241,8 @@ public class ImagePickerActivity extends ImageCommonActivity implements View.OnC
     public void onLoadFolders(ArrayList<ImageFolder> folders) {
         this.mFolders = folders;
         initFolderList();
-        mFolders.get(0).setUseCamera(useCamera);
+        if (this.mFolders.isEmpty()) return;  /*空相册*/
+        mFolders.get(0).setUseCamera(isUseCamera);
         setFolder(mFolders.get(0));
         if (mSelectedImages != null && mGridAdapter != null) {
             mGridAdapter.setSelectedImages(mSelectedImages);
