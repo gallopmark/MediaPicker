@@ -43,7 +43,7 @@ public class ImagePagerAdapter extends PagerAdapter {
     public Object instantiateItem(@NonNull ViewGroup container, final int position) {
         View view = mInflater.inflate(R.layout.adapter_photoview, container, false);
         PinchImageView photoView = view.findViewById(R.id.photoView);
-        ImageSource.getInstance().getDisplacer().displayPager(context, images.get(position).getPath(), photoView);
+        ImageSource.getDisplacer().displayPager(context, images.get(position).getPath(), photoView);
         photoView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

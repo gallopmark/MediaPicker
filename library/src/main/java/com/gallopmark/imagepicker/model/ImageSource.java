@@ -46,10 +46,13 @@ public class ImageSource {
     }
 
     /*如果未设置图片加载器，则使用默认图片加载器（项目中需要引用glide图片加载库）*/
-    public ImageLoader getDisplacer() {
+    private ImageLoader getImageLoader() {
         return mImageLoader == null ? new DefaultImageLoader() : mImageLoader;
     }
 
+    public static ImageLoader getDisplacer(){
+        return getInstance().getImageLoader();
+    }
     /**
      * 从SDCard加载图片
      */

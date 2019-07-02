@@ -1,6 +1,7 @@
 package com.gallopmark.imagepicker.model;
 
 import android.app.Activity;
+
 import androidx.fragment.app.Fragment;
 
 import com.gallopmark.imagepicker.ClipImageActivity;
@@ -137,6 +138,30 @@ public class ImagePicker {
 
         public ImagePicker create() {
             return new ImagePicker(this);
+        }
+
+        public void start(Activity activity) {
+            start(activity, DEFAULT_REQUEST_CODE);
+        }
+
+        public void start(Activity activity, int requestCode) {
+            create().start(activity, requestCode);
+        }
+
+        public void start(Fragment fragment) {
+            start(fragment, DEFAULT_REQUEST_CODE);
+        }
+
+        public void start(Fragment fragment, int requestCode) {
+            create().start(fragment, requestCode);
+        }
+
+        public void start(android.app.Fragment fragment) {
+            start(fragment, DEFAULT_REQUEST_CODE);
+        }
+
+        public void start(android.app.Fragment fragment, int requestCode) {
+            create().start(fragment, requestCode);
         }
     }
 

@@ -81,7 +81,7 @@ public class ImageGridAdapter extends RecyclerView.Adapter<BaseViewHolder> {
         } else {
             final ImageItem imageItem = getImageItem(position);
             final ImageViewHolder holder = (ImageViewHolder) viewHolder;
-            ImageSource.getInstance().getDisplacer().displayGrid(mContext, imageItem.getPath(), holder.mImageView);
+            ImageSource.getDisplacer().displayGrid(mContext, imageItem.getPath(), holder.mImageView);
 //            Glide.with(mContext).load(new File(imageItem.getPath()))
 //                    .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.NONE))
 //                    .into(holder.mImageView);

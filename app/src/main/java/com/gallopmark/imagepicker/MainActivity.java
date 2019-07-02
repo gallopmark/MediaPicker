@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
         new ImagePicker.ImagePickerBuilder()
                 .isCrop(true)
                 .maxSelectCount(20)
-                .imageLoader(new MyImageLoader())
+//                .imageLoader(new MyImageLoader())
                 .create().start(this);
     }
 
