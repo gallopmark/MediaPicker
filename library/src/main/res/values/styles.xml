@@ -14,7 +14,7 @@
     <style name="ToolBarStyle" parent="Widget.AppCompat.Toolbar">
         <item name="android:background">@color/stylePrimary</item>
         <item name="titleTextAppearance">@style/ToolbarTitleTextStyle</item>
-        <item name="navigationIcon">@drawable/icon_back</item>
+        <item name="navigationIcon">@drawable/ic_image_back</item>
         <item name="contentInsetStart">0dp</item>
         <item name="android:minHeight">@dimen/toolbar_height</item>
         <item name="android:layout_width">match_parent</item>

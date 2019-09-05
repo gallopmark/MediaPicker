@@ -59,7 +59,7 @@
             android:layout_gravity="center"
             android:layout_marginLeft="@dimen/dp_12"
             android:layout_marginRight="@dimen/dp_12"
-            android:src="@drawable/icon_image_select"
+            android:src="@drawable/ic_image_selected"
             android:visibility="gone" />
     </LinearLayout>
 

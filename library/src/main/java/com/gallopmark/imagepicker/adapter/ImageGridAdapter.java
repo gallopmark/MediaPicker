@@ -142,10 +142,10 @@ public class ImageGridAdapter extends RecyclerView.Adapter<BaseViewHolder> {
 
     private void setItemSelect(ImageViewHolder holder, boolean isSelected) {
         if (isSelected) {
-            holder.mSelectedIv.setImageResource(R.drawable.icon_image_select);
+            holder.mSelectedIv.setImageResource(R.drawable.ic_image_selected);
             holder.mMasking.setAlpha(0.5f);
         } else {
-            holder.mSelectedIv.setImageResource(R.drawable.icon_image_un_select);
+            holder.mSelectedIv.setImageResource(R.drawable.ic_image_unselect);
             holder.mMasking.setAlpha(0f);
         }
     }

@@ -111,8 +111,8 @@ public class ImagePreviewActivity extends BaseActivity implements ImagePreviewVi
         mViewPager = findViewById(R.id.mViewPager);
         llBottom = findViewById(R.id.llBottom);
         mSelectTextView = findViewById(R.id.mSelectTextView);
-        mSelectDrawable = ContextCompat.getDrawable(this, R.drawable.icon_image_select);
-        mUnSelectDrawable = ContextCompat.getDrawable(this, R.drawable.icon_image_un_select);
+        mSelectDrawable = ContextCompat.getDrawable(this, R.drawable.ic_image_selected);
+        mUnSelectDrawable = ContextCompat.getDrawable(this, R.drawable.ic_image_unselect);
     }
 
     @Override
