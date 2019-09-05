@@ -21,20 +21,14 @@
 
         <activity
             android:name="com.gallopmark.imagepicker.ImagePickerActivity"
-            android:launchMode="singleTop"
-            android:screenOrientation="portrait"
-            android:theme="@style/ImagePickerTheme" />
+            android:launchMode="singleTop" />
 
         <activity
             android:name="com.gallopmark.imagepicker.ImagePreviewActivity"
-            android:launchMode="singleTop"
-            android:screenOrientation="portrait"
-            android:theme="@style/ImagePickerTheme" />
+            android:launchMode="singleTop" />
 
         <activity
             android:name="com.gallopmark.imagepicker.ClipImageActivity"
-            android:launchMode="singleTop"
-            android:screenOrientation="portrait"
-            android:theme="@style/ImagePickerTheme" />
+            android:launchMode="singleTop" />
     </application>
 </manifest>
