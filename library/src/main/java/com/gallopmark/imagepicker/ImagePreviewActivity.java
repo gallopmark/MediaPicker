@@ -4,10 +4,12 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.widget.Toolbar;
+
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -222,6 +224,7 @@ public class ImagePreviewActivity extends BaseActivity implements ImagePreviewVi
     }
 
     private void setCheckStatus(int position) {
+        if (position < 0 || position > mImages.size()) return;
         int index = mSelectImages.indexOf(mImages.get(position));
         if (index >= 0 && index < mSelectImages.size()) {
             setCheckItem();
