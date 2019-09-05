@@ -1,8 +1,9 @@
-<manifest package="com.gallopmark.imagepicker">
-   <!-- &lt;!&ndash;储存卡的读写权限&ndash;&gt;
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.gallopmark.imagepicker">
+    <!--储存卡的读写权限-->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    &lt;!&ndash;//调用相机权限&ndash;&gt;
+    <!--//调用相机权限-->
     <uses-permission android:name="android.permission.CAMERA" />
 
     <application>
@@ -35,5 +36,5 @@
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:theme="@style/ImagePickerTheme" />
-    </application>-->
+    </application>
 </manifest>
