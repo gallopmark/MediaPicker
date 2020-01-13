@@ -50,9 +50,10 @@ public class ImageSource {
         return mImageLoader == null ? new DefaultImageLoader() : mImageLoader;
     }
 
-    public static ImageLoader getDisplacer(){
+    public static ImageLoader getDisplacer() {
         return getInstance().getImageLoader();
     }
+
     /**
      * 从SDCard加载图片
      */
@@ -62,35 +63,41 @@ public class ImageSource {
             @Override
             public void run() {
                 //扫描图片
-                Uri mImageUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-                ContentResolver mContentResolver = context.getContentResolver();
-                Cursor mCursor = mContentResolver.query(mImageUri, new String[]{
-                                MediaStore.Images.Media.DATA,
-                                MediaStore.Images.Media.DISPLAY_NAME,
-                                MediaStore.Images.Media.DATE_ADDED,
-                                MediaStore.Images.Media._ID,
-                                MediaStore.Images.Media.MIME_TYPE},
-                        null,
-                        null,
-                        MediaStore.Images.Media.DATE_ADDED);
+                Uri imageUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+                ContentResolver contentResolver = context.getContentResolver();
+                final String[] projection = new String[]{
+                        MediaStore.Images.Media._ID,
+                        MediaStore.Images.Media.DATA,
+                        MediaStore.Images.Media.DISPLAY_NAME,
+                        MediaStore.Images.Media.DATE_ADDED,
+                        MediaStore.Images.Media.MIME_TYPE};
+                Cursor cursor = contentResolver.query(imageUri, projection, null, null, MediaStore.Images.Media.DATE_ADDED);
                 ArrayList<ImageItem> images = new ArrayList<>();
                 //读取扫描到的图片
-                if (mCursor != null) {
-                    while (mCursor.moveToNext()) {
-                        // 获取图片的路径
-                        String path = mCursor.getString(mCursor.getColumnIndex(MediaStore.Images.Media.DATA));
+                if (cursor != null) {
+                    while (cursor.moveToNext()) {
+                        //ID 是在 Android Q 上读取文件的关键字段
+//                        int id = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID);
+                        //注意，DATA 数据在 Android Q 以前代表了文件的路径，但在 Android Q上该路径无法被访问，因此没有意义。
+//                        String path;
+//                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+//                            path = getRealPath(id);
+//                        } else {
+//                            path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+//                        }
+                        String path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
                         //获取图片名称
-                        String name = mCursor.getString(mCursor.getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME));
+                        String name = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME));
                         //获取图片时间
-                        long time = mCursor.getLong(mCursor.getColumnIndex(MediaStore.Images.Media.DATE_ADDED));
+                        long time = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.Media.DATE_ADDED));
                         //获取图片类型
-                        String mimeType = mCursor.getString(mCursor.getColumnIndex(MediaStore.Images.Media.MIME_TYPE));
+                        String mimeType = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.MIME_TYPE));
                         //过滤未下载完成或者不存在的文件
                         if (!TextUtils.equals(getExtensionName(path), "downloading") && checkImgExists(path)) {
                             images.add(new ImageItem(path, time, name, mimeType));
                         }
                     }
-                    mCursor.close();
+                    cursor.close();
                 }
                 Collections.reverse(images);
                 callback.onSuccess(splitFolder(context, images));
@@ -98,10 +105,30 @@ public class ImageSource {
         }).start();
     }
 
+    //既然 data 不可用，就需要知晓 id 的使用方式，首先是使用 id 拼装出 content uri
+//    private String getRealPath(int id) {
+//        return MediaStore.Images.Media.EXTERNAL_CONTENT_URI.buildUpon()
+//                .appendPath(String.valueOf(id)).build().toString();
+//    }
+
+    /**
+     * Java文件操作 获取文件扩展名
+     */
+    private String getExtensionName(String filename) {
+        if (filename != null && filename.length() > 0) {
+            int dot = filename.lastIndexOf('.');
+            if (dot > -1 && dot < filename.length() - 1) {
+                return filename.substring(dot + 1);
+            }
+        }
+        return "";
+    }
+
     /**
      * 检查图片是否存在。ContentResolver查询处理的数据有可能文件路径并不存在。
      */
-    private static boolean checkImgExists(String filePath) {
+    private boolean checkImgExists(String filePath) {
+        if (TextUtils.isEmpty(filePath)) return false;
         return new File(filePath).exists();
     }
 
@@ -123,19 +150,6 @@ public class ImageSource {
             }
         }
         return folders;
-    }
-
-    /**
-     * Java文件操作 获取文件扩展名
-     */
-    private static String getExtensionName(String filename) {
-        if (filename != null && filename.length() > 0) {
-            int dot = filename.lastIndexOf('.');
-            if (dot > -1 && dot < filename.length() - 1) {
-                return filename.substring(dot + 1);
-            }
-        }
-        return "";
     }
 
     /**

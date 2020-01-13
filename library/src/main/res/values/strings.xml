@@ -9,6 +9,7 @@
     <string name="imagePicker_noSdcard">存储权限已被禁止，应用无法读取系统相册,如需打开请点“确定”</string>
     <string name="imagePicker_noCamera">相机权限已被禁止，应用无法启动照相机，如需打开请点“确定”</string>
     <string name="imagePicker_dismiss_camera">禁止相机权限应用无法启动相机，请重新打开</string>
+    <string name="imagePicker_open_camera_failure">相机不可用</string>
 
     <string name="imagePicker_time_today">今天</string>
     <string name="imagePicker_time_currentWeek">本周</string>

@@ -1,4 +1,4 @@
-package com.gallopmark.imagepicker;
+package com.holike.imagepicker;
 
 import android.content.Context;
 import android.content.Intent;

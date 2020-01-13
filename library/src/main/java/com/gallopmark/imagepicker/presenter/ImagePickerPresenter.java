@@ -22,6 +22,7 @@ import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AlertDialog;
+
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
@@ -283,6 +284,16 @@ public class ImagePickerPresenter {
             } catch (Exception e) {
                 mPhotoPath = null;
             }
+        } else {
+            new AlertDialog.Builder(activity)
+                    .setTitle(R.string.imagePicker_dialog_title)
+                    .setMessage(R.string.imagePicker_open_camera_failure)
+                    .setPositiveButton(R.string.imagePicker_dialog_confirm, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    }).show();
         }
     }
 

@@ -4,8 +4,10 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.media.ExifInterface;
+
+import androidx.exifinterface.media.ExifInterface;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
 
@@ -46,8 +48,14 @@ public class ImageUtil {
     }
 
     public static Uri getImageUri(Context context, File file) {
-        String authority = context.getPackageName() + ".provider";
-        return FileProvider.getUriForFile(context, authority, file);
+        Uri uri;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            String authority = context.getPackageName() + ".provider";
+            uri = FileProvider.getUriForFile(context, authority, file);
+        } else {
+            uri = Uri.fromFile(file);
+        }
+        return uri;
     }
 
     public static String saveImage(Bitmap bitmap, String path) {

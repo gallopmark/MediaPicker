@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.gallopmark.imagepicker">
+    package="com.holike.imagepicker">
     <!--tools:replace="android:allowBackup"-->
     <application
         android:allowBackup="false"
@@ -10,10 +10,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="android:theme"
+        android:requestLegacyExternalStorage="true"
         tools:ignore="GoogleAppIndexingWarning"
-        tools:targetApi="n">
+        tools:targetApi="q">
 
-        <activity android:name=".MainActivity">
+        <activity android:name="com.holike.imagepicker.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
