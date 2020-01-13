@@ -28,7 +28,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         new ImagePicker.ImagePickerBuilder()
-                .isCrop(true)
                 .maxSelectCount(20)
 //                .imageLoader(new MyImageLoader())
                 .create().start(this);

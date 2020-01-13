@@ -1,12 +1,15 @@
 package com.gallopmark.imagepicker.adapter;
 
 import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+
 import com.gallopmark.imagepicker.R;
 import com.gallopmark.imagepicker.bean.ImageItem;
 import com.gallopmark.imagepicker.model.ImageSource;
@@ -171,10 +174,12 @@ public class ImageGridAdapter extends RecyclerView.Adapter<BaseViewHolder> {
 
     public ImageItem getFirstVisibleImage(int firstVisibleItem) {
         if (mImages != null && !mImages.isEmpty()) {
-            if (isUseCamera) {
-                return mImages.get(firstVisibleItem == 0 ? 0 : firstVisibleItem - 1);
-            } else {
-                return mImages.get(firstVisibleItem);
+            if (firstVisibleItem >= 0 && firstVisibleItem < mImages.size()) {
+                if (isUseCamera) {
+                    return mImages.get(firstVisibleItem == 0 ? 0 : firstVisibleItem - 1);
+                } else {
+                    return mImages.get(firstVisibleItem);
+                }
             }
         }
         return null;
