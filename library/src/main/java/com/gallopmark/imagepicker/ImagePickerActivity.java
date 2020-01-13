@@ -124,8 +124,8 @@ public class ImagePickerActivity extends BaseActivity implements View.OnClickLis
         return bundle;
     }
 
-    public static void onPreviewResult(Activity activity, List<ImageItem> mSelectItems, boolean isConfirm) {
-        tempSelectImages = mSelectItems;
+    public static void onPreviewResult(Activity activity, List<ImageItem> selectItems, boolean isConfirm) {
+        tempSelectImages = selectItems;
         Intent intent = new Intent();
         intent.putExtra(ImagePicker.IS_CONFIRM, isConfirm);
         activity.setResult(ImagePicker.PREVIEW_RESULT_CODE, intent);

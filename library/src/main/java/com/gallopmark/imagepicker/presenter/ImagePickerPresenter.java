@@ -141,13 +141,13 @@ public class ImagePickerPresenter {
         ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_WRITE_EXTERNAL_REQUEST_CODE);
     }
 
-    public void changeTime(TextView mTimeTextView, ImageItem image) {
+    public void changeTime(TextView tvDatetime, ImageItem image) {
         if (image != null) {
             String time = DateUtils.getImageTime(activity, image.getTime() * 1000);
-            mTimeTextView.setText(time);
-            showTime(mTimeTextView);
+            tvDatetime.setText(time);
+            showTime(tvDatetime);
             if (mHide == null) {
-                mHide = new HideRunnable(mTimeTextView);
+                mHide = new HideRunnable(tvDatetime);
             } else {
                 handler.removeCallbacks(mHide);
             }
@@ -156,44 +156,44 @@ public class ImagePickerPresenter {
     }
 
     /*隐藏时间条*/
-    private void hideTime(TextView mTimeTextView) {
+    private void hideTime(TextView tvDatetime) {
         if (isShowTime) {
-            ObjectAnimator.ofFloat(mTimeTextView, "alpha", 1, 0).setDuration(300).start();
+            ObjectAnimator.ofFloat(tvDatetime, "alpha", 1, 0).setDuration(300).start();
             isShowTime = false;
         }
     }
 
     /*显示时间条*/
-    private void showTime(TextView mTimeTextView) {
+    private void showTime(TextView tvDatetime) {
         if (!isShowTime) {
-            ObjectAnimator.ofFloat(mTimeTextView, "alpha", 0, 1).setDuration(300).start();
+            ObjectAnimator.ofFloat(tvDatetime, "alpha", 0, 1).setDuration(300).start();
             isShowTime = true;
         }
     }
 
     /*弹出文件夹列表*/
-    public void openFolder(final FrameLayout mFolderLayout, final FrameLayout mFolderNameLayout) {
-        if (mFolderLayout.getVisibility() != View.VISIBLE) {
-            mFolderNameLayout.setEnabled(false);
-            ObjectAnimator animator = ObjectAnimator.ofFloat(mFolderLayout, "translationY",
-                    mFolderLayout.getHeight(), 0).setDuration(300);
+    public void openFolder(final FrameLayout folderLayout, final FrameLayout folderNameLayout) {
+        if (folderLayout.getVisibility() != View.VISIBLE) {
+            folderNameLayout.setEnabled(false);
+            ObjectAnimator animator = ObjectAnimator.ofFloat(folderLayout, "translationY",
+                    folderLayout.getHeight(), 0).setDuration(300);
             animator.addListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationStart(Animator animation) {
                     super.onAnimationStart(animation);
-                    mFolderLayout.setVisibility(View.VISIBLE);
+                    folderLayout.setVisibility(View.VISIBLE);
                 }
 
                 @Override
                 public void onAnimationEnd(Animator animation) {
                     super.onAnimationEnd(animation);
-                    mFolderNameLayout.setEnabled(true);
+                    folderNameLayout.setEnabled(true);
                 }
 
                 @Override
                 public void onAnimationCancel(Animator animation) {
                     super.onAnimationCancel(animation);
-                    mFolderNameLayout.setEnabled(true);
+                    folderNameLayout.setEnabled(true);
                 }
             });
             animator.start();
@@ -201,23 +201,23 @@ public class ImagePickerPresenter {
     }
 
     /*收起文件夹列表*/
-    public void closeFolder(final FrameLayout mFolderLayout, final FrameLayout mFolderNameLayout) {
-        if (mFolderLayout.getVisibility() != View.GONE) {
-            mFolderNameLayout.setEnabled(false);
-            ObjectAnimator animator = ObjectAnimator.ofFloat(mFolderLayout, "translationY",
-                    0, mFolderLayout.getHeight()).setDuration(300);
+    public void closeFolder(final FrameLayout folderLayout, final FrameLayout folderNameLayout) {
+        if (folderLayout.getVisibility() != View.GONE) {
+            folderNameLayout.setEnabled(false);
+            ObjectAnimator animator = ObjectAnimator.ofFloat(folderLayout, "translationY",
+                    0, folderLayout.getHeight()).setDuration(300);
             animator.addListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
                     super.onAnimationEnd(animation);
-                    mFolderLayout.setVisibility(View.GONE);
-                    mFolderNameLayout.setEnabled(true);
+                    folderLayout.setVisibility(View.GONE);
+                    folderNameLayout.setEnabled(true);
                 }
 
                 @Override
                 public void onAnimationCancel(Animator animation) {
                     super.onAnimationCancel(animation);
-                    mFolderNameLayout.setEnabled(true);
+                    folderNameLayout.setEnabled(true);
                 }
             });
             animator.start();
@@ -337,26 +337,20 @@ public class ImagePickerPresenter {
         }
     }
 
-    /*拍照成功返回路径*/
-    private String getPhotoPath() {
-        return mPhotoPath;
-    }
 
     public boolean isLoadImage() {
         return isLoadImage;
     }
 
     public void onActivityResult(int requestCode, int resultCode) {
-        if (requestCode == CAMERA_REQUEST_CODE) {
-            if (resultCode == Activity.RESULT_OK) {
-                String mPhotoPath = getPhotoPath();
-                if (mPhotoPath == null || !new File(mPhotoPath).exists()) return;
-                activity.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(new File(mPhotoPath))));
-                ArrayList<String> images = new ArrayList<>();
-                images.add(mPhotoPath);
-                setResult(Activity.RESULT_OK, images, true);
-                activity.finish();
-            }
+        //拍照成功返回路径
+        if (requestCode == CAMERA_REQUEST_CODE && resultCode == Activity.RESULT_OK
+                && mPhotoPath != null && new File(mPhotoPath).exists()) {
+            activity.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, ImageUtil.getImageUri(activity, new File(mPhotoPath))));
+            ArrayList<String> images = new ArrayList<>();
+            images.add(mPhotoPath);
+            setResult(Activity.RESULT_OK, images, true);
+            activity.finish();
         }
     }
 
