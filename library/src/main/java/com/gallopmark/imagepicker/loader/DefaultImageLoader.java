@@ -12,7 +12,6 @@ import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.ImageViewTarget;
 import com.gallopmark.imagepicker.utils.ImageUtil;
 
-import java.io.File;
 import java.io.Serializable;
 
 /*默认加载器
@@ -21,14 +20,14 @@ import java.io.Serializable;
 public class DefaultImageLoader implements ImageLoader, Serializable {
     @Override
     public void displayFolder(@NonNull Context context, @Nullable String path, @NonNull ImageView target) {
-        Glide.with(context).load(new File(path))
+        Glide.with(context).load(path)
                 .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.NONE))
                 .into(target);
     }
 
     @Override
     public void displayGrid(@NonNull Context context, @Nullable String path, @NonNull ImageView target) {
-        Glide.with(context).load(new File(path))
+        Glide.with(context).load(path)
                 .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.NONE))
                 .into(target);
     }
