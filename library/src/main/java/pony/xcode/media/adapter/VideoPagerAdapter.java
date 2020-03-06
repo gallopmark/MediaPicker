@@ -39,7 +39,7 @@ public class VideoPagerAdapter extends MediaBasePagerAdapter<MediaBean> {
         if (mDataList != null && !mDataList.isEmpty()) {
             mViewList = new ArrayList<>();
             for (int i = 0, count = mDataList.size(); i < count; i++) {
-                View view = layoutInflater.inflate(R.layout.adapter_video_view, new FrameLayout(context), false);
+                View view = layoutInflater.inflate(R.layout.mediaselector_adapter_video_view, new FrameLayout(context), false);
                 mViewList.add(view);
             }
         }

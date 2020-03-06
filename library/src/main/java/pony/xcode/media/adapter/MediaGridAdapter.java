@@ -66,10 +66,10 @@ public class MediaGridAdapter extends RecyclerView.Adapter<BaseViewHolder> {
     @Override
     public BaseViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (viewType == TYPE_IMAGE) {
-            View view = mInflater.inflate(R.layout.adapter_image_item, parent, false);
+            View view = mInflater.inflate(R.layout.mediaselector_adapter_grid_item, parent, false);
             return new ImageViewHolder(view);
         } else {
-            View view = mInflater.inflate(R.layout.adapter_camera_item, parent, false);
+            View view = mInflater.inflate(R.layout.mediaselector_adapter_camera_item, parent, false);
             return new CameraViewHolder(view);
         }
     }

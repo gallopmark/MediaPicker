@@ -32,7 +32,7 @@ public class ImagePagerAdapter extends MediaBasePagerAdapter<MediaBean> {
     @NonNull
     @Override
     public Object instantiateItem(@NonNull ViewGroup container, final int position) {
-        View view = mInflater.inflate(R.layout.adapter_photoview, container, false);
+        View view = mInflater.inflate(R.layout.mediaselector_adapter_photoview, container, false);
         PhotoView photoView = view.findViewById(R.id.photoView);
         MediaSelector.getDisplacer().displayPager(mContext, mDataList.get(position).getPath(), photoView);
         photoView.setOnClickListener(new View.OnClickListener() {

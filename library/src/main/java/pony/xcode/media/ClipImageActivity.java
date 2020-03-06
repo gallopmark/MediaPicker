@@ -61,7 +61,7 @@ public class ClipImageActivity extends MediaBaseActivity {
 
     @Override
     protected int bindContentView() {
-        return R.layout.activity_clip_image;
+        return R.layout.mediaselector_activity_clip_image;
     }
 
     @Override

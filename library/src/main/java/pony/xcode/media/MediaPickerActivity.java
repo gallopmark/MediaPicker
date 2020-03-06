@@ -163,7 +163,7 @@ public class MediaPickerActivity extends MediaBaseActivity implements View.OnCli
 
     @Override
     protected int bindContentView() {
-        return R.layout.activity_imagepicker;
+        return R.layout.mediaselector_activity_media_picker;
     }
 
     @Override

@@ -83,7 +83,7 @@ public class MediaPreviewActivity extends MediaBaseActivity implements MediaPrev
 
     @Override
     protected int bindContentView() {
-        return R.layout.activity_image_preview;
+        return R.layout.activity_media_preview;
     }
 
     @Override

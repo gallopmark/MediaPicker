@@ -34,7 +34,7 @@ public class MediaFolderAdapter extends RecyclerView.Adapter<MediaFolderAdapter.
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = mInflater.inflate(R.layout.adapter_folder_item, parent, false);
+        View view = mInflater.inflate(R.layout.mediaselector_adapter_folder_item, parent, false);
         return new MyViewHolder(view);
     }
 
