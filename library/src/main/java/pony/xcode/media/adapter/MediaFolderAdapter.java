@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.gallopmark.imagepicker.R;
+import pony.xcode.media.R;
 import pony.xcode.media.bean.MediaFolder;
 import pony.xcode.media.bean.MediaBean;
 import pony.xcode.media.MediaSelector;

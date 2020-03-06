@@ -12,7 +12,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="android:theme"
-        android:requestLegacyExternalStorage="false"
         tools:ignore="GoogleAppIndexingWarning"
         tools:targetApi="q">
 

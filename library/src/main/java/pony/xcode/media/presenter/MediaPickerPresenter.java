@@ -28,7 +28,7 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import pony.xcode.media.MediaConfig;
-import com.gallopmark.imagepicker.R;
+import pony.xcode.media.R;
 import pony.xcode.media.bean.MediaFolder;
 import pony.xcode.media.bean.MediaBean;
 import pony.xcode.media.dialog.PictureLoadingDialog;

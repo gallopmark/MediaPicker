@@ -5,7 +5,8 @@ import android.content.Context;
 import android.os.Bundle;
 import android.view.Window;
 
-import com.gallopmark.imagepicker.R;
+import pony.xcode.media.R;
+
 
 public class PictureLoadingDialog extends Dialog {
 

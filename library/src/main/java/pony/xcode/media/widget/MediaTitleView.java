@@ -16,9 +16,10 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.widget.TextViewCompat;
 
-import com.gallopmark.imagepicker.R;
 
 import java.lang.reflect.Field;
+
+import pony.xcode.media.R;
 
 
 public class MediaTitleView extends Toolbar {

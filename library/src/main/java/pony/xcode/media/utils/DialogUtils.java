@@ -6,7 +6,7 @@ import android.content.DialogInterface;
 
 import androidx.appcompat.app.AlertDialog;
 
-import com.gallopmark.imagepicker.R;
+import pony.xcode.media.R;
 
 public class DialogUtils {
     //相机不可用弹窗提示

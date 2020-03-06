@@ -12,8 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 
-import com.gallopmark.imagepicker.R;
-
 
 abstract class MediaBaseActivity extends AppCompatActivity {
 

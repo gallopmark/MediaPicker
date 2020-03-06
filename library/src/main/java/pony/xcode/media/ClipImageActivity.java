@@ -12,8 +12,6 @@ import androidx.appcompat.widget.Toolbar;
 import android.view.View;
 import android.widget.FrameLayout;
 
-import com.gallopmark.imagepicker.R;
-
 import pony.xcode.media.utils.ImageUtil;
 import pony.xcode.media.utils.StringUtils;
 import pony.xcode.media.widget.ClipImageView;

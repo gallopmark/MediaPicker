@@ -15,7 +15,7 @@ import android.widget.VideoView;
 import androidx.annotation.NonNull;
 import androidx.viewpager.widget.ViewPager;
 
-import com.gallopmark.imagepicker.R;
+import pony.xcode.media.R;
 import pony.xcode.media.bean.MediaBean;
 import pony.xcode.media.utils.DateUtils;
 import pony.xcode.media.utils.DialogUtils;

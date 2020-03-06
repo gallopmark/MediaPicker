@@ -8,7 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.gallopmark.imagepicker.R;
+import pony.xcode.media.R;
 import pony.xcode.media.bean.MediaBean;
 import pony.xcode.media.MediaSelector;
 import com.github.chrisbanes.photoview.PhotoView;

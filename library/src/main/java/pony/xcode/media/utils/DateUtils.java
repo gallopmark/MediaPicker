@@ -2,12 +2,13 @@ package pony.xcode.media.utils;
 
 import android.content.Context;
 
-import com.gallopmark.imagepicker.R;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+
+import pony.xcode.media.R;
 
 public class DateUtils {
 

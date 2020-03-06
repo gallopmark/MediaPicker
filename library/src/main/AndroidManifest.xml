@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.gallopmark.imagepicker">
+    package="pony.xcode.media">
     <!--储存卡的读写权限-->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -9,7 +9,7 @@
     <application>
 
         <provider
-            android:name="pony.xcode.media.CaptureFileProvider"
+            android:name=".CaptureFileProvider"
             android:authorities="${applicationId}.provider"
             android:exported="false"
             android:grantUriPermissions="true">
@@ -20,15 +20,15 @@
         </provider>
 
         <activity
-            android:name="pony.xcode.media.MediaPickerActivity"
+            android:name=".MediaPickerActivity"
             android:launchMode="singleTop" />
 
         <activity
-            android:name="pony.xcode.media.MediaPreviewActivity"
+            android:name=".MediaPreviewActivity"
             android:launchMode="singleTop" />
 
         <activity
-            android:name="pony.xcode.media.ClipImageActivity"
+            android:name=".ClipImageActivity"
             android:launchMode="singleTop" />
     </application>
 </manifest>
