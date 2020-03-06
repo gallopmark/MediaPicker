@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
     android:layout_margin="@dimen/dp_1">
 
-    <com.gallopmark.imagepicker.widget.SquareImageView
+    <pony.xcode.media.widget.SquareImageView
         android:id="@+id/mImageView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -13,7 +14,7 @@
         android:background="@color/default_background"
         android:scaleType="centerCrop" />
 
-    <com.gallopmark.imagepicker.widget.SquareImageView
+    <pony.xcode.media.widget.SquareImageView
         android:id="@+id/mMasking"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -36,4 +37,21 @@
         android:padding="@dimen/dp_3"
         android:src="@drawable/ic_image_gif"
         android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/tv_duration"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_30"
+        android:layout_gravity="bottom"
+        android:background="@drawable/picture_icon_shadow_bg"
+        android:drawableStart="@drawable/picture_icon_video"
+        android:drawableLeft="@drawable/picture_icon_video"
+        android:drawablePadding="@dimen/dp_5"
+        android:gravity="center|start"
+        android:paddingStart="@dimen/dp_5"
+        android:paddingLeft="@dimen/dp_5"
+        android:textColor="#ffffff"
+        android:textSize="@dimen/sp_12"
+        android:visibility="gone"
+        tools:ignore="RtlSymmetry" />
 </FrameLayout>

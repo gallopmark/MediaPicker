@@ -10,34 +10,37 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.ImageViewTarget;
-import com.gallopmark.imagepicker.loader.ImageLoader;
-import com.gallopmark.imagepicker.model.ImagePicker;
-import com.gallopmark.imagepicker.utils.ImageUtil;
+import pony.xcode.media.loader.ImageLoader;
+import pony.xcode.media.MediaSelector;
+import pony.xcode.media.utils.ImageUtil;
 
-import java.io.Serializable;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
+    ImageView imageView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        new ImagePicker.ImagePickerBuilder()
-                .maxSelectCount(20)
-//                .imageLoader(new MyImageLoader())
-                .create().start(this);
+        setContentView(R.layout.activity_main);
+        imageView = findViewById(R.id.iv_image);
+        MediaSelector.videoBuilder().maxSelectCount(6)
+                .durationLimit(15)
+//                .sizeLimit(5 * 1024 * 1024)
+                .start(this);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK && data != null) {
-            Toast.makeText(this, data.getStringArrayListExtra(ImagePicker.SELECT_RESULT).get(0), Toast.LENGTH_LONG).show();
+            ArrayList<String> images = data.getStringArrayListExtra(MediaSelector.SELECT_RESULT);
+            Glide.with(this).load(images.get(0)).into(imageView);
         }
     }
 

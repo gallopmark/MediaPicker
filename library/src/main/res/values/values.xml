@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="MediaTitleView">
+        <attr format="string" name="mtv_titleText"/>
+        <attr format="reference" name="mtv_titleAppearance"/>
+    </declare-styleable>
+</resources>

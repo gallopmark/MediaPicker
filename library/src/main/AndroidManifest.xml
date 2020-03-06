@@ -9,26 +9,26 @@
     <application>
 
         <provider
-            android:name="androidx.core.content.FileProvider"
+            android:name="pony.xcode.media.CaptureFileProvider"
             android:authorities="${applicationId}.provider"
             android:exported="false"
             android:grantUriPermissions="true">
 
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_path" />
+                android:resource="@xml/media_capture_path" />
         </provider>
 
         <activity
-            android:name="com.gallopmark.imagepicker.ImagePickerActivity"
+            android:name="pony.xcode.media.MediaPickerActivity"
             android:launchMode="singleTop" />
 
         <activity
-            android:name="com.gallopmark.imagepicker.ImagePreviewActivity"
+            android:name="pony.xcode.media.MediaPreviewActivity"
             android:launchMode="singleTop" />
 
         <activity
-            android:name="com.gallopmark.imagepicker.ClipImageActivity"
+            android:name="pony.xcode.media.ClipImageActivity"
             android:launchMode="singleTop" />
     </application>
 </manifest>

@@ -19,4 +19,7 @@
     <color name="black">#000000</color>
 
     <color name="whitetransparent">#b3ffffff</color>
+
+    <color name="picture_color_bfe85d">#BF96E85D</color>
+    <color name="picture_color_ffe85d">#FF96E85D</color>
 </resources>

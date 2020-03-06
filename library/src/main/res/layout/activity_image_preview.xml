@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:background="@color/stylePrimary">
 
-    <androidx.viewpager.widget.ViewPager
+    <pony.xcode.media.widget.PreviewViewPager
         android:id="@+id/mViewPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
@@ -15,7 +15,7 @@
     <LinearLayout
         android:id="@+id/llBottom"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/dp_40"
         android:layout_gravity="bottom"
         android:background="@color/translucence"
         android:clickable="true"
@@ -25,9 +25,8 @@
         <TextView
             android:id="@+id/mSelectTextView"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_gravity="end"
-            android:layout_margin="@dimen/dp_10"
             android:drawableStart="@drawable/ic_image_unselect"
             android:drawableLeft="@drawable/ic_image_unselect"
             android:drawablePadding="@dimen/dp_5"
