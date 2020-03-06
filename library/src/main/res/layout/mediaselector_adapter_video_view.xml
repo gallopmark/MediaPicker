@@ -15,7 +15,7 @@
         android:layout_height="@dimen/dp_60"
         android:layout_gravity="center"
         android:visibility="gone"
-        android:src="@drawable/picture_icon_video_play"
+        android:src="@drawable/mediaselector_icon_video_play"
         tools:ignore="ContentDescription" />
 
     <LinearLayout

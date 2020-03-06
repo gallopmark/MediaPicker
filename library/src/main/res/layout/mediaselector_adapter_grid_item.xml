@@ -27,7 +27,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="end"
         android:padding="@dimen/dp_10"
-        android:src="@drawable/ic_image_unselect" />
+        android:src="@drawable/mediaselector_icon_unselect" />
 
     <ImageView
         android:id="@+id/mGifImageView"
@@ -35,7 +35,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
         android:padding="@dimen/dp_3"
-        android:src="@drawable/ic_image_gif"
+        android:src="@drawable/mediaselector_icon_gif"
         android:visibility="gone" />
 
     <TextView
@@ -43,9 +43,9 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_30"
         android:layout_gravity="bottom"
-        android:background="@drawable/picture_icon_shadow_bg"
-        android:drawableStart="@drawable/picture_icon_video"
-        android:drawableLeft="@drawable/picture_icon_video"
+        android:background="@drawable/mediaselector_icon_shadow_bg"
+        android:drawableStart="@drawable/mediaselector_icon_video"
+        android:drawableLeft="@drawable/mediaselector_icon_video"
         android:drawablePadding="@dimen/dp_5"
         android:gravity="center|start"
         android:paddingStart="@dimen/dp_5"

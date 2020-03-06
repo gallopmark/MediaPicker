@@ -20,6 +20,6 @@ public class PictureLoadingDialog extends Dialog {
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.mediaselector_loading);
+        setContentView(R.layout.mediaselector_loading_background);
     }
 }

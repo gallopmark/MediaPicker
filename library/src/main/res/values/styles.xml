@@ -17,7 +17,7 @@
         <item name="titleMarginStart">@dimen/dp_10</item>
         <item name="titleMarginEnd">@dimen/dp_10</item>
         <item name="contentInsetStartWithNavigation">0dp</item>
-        <item name="navigationIcon">@drawable/ic_image_back</item>
+        <item name="navigationIcon">@drawable/mediaselector_icon_back</item>
         <item name="android:minHeight">@dimen/toolbar_height</item>
         <!--<item name="android:minHeight">?attr/actionBarSize</item>-->
         <item name="android:layout_width">match_parent</item>

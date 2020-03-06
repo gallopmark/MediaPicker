@@ -94,7 +94,7 @@
                     android:layout_marginLeft="@dimen/dp_2"
                     android:layout_toEndOf="@+id/mFolderNameTv"
                     android:layout_toRightOf="@+id/mFolderNameTv"
-                    android:src="@drawable/ic_text_indicator" />
+                    android:src="@drawable/mediaselector_icon_indicator" />
             </RelativeLayout>
         </FrameLayout>
 

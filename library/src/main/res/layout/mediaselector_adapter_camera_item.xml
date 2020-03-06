@@ -12,5 +12,5 @@
         android:background="@color/default_background"
         android:padding="@dimen/dp_20"
         android:scaleType="center"
-        android:src="@drawable/ic_photo_camera" />
+        android:src="@drawable/mediaselector_icon_camera" />
 </FrameLayout>

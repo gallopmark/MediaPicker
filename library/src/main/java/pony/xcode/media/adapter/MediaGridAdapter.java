@@ -157,10 +157,10 @@ public class MediaGridAdapter extends RecyclerView.Adapter<BaseViewHolder> {
 
     private void setItemSelect(ImageViewHolder holder, boolean isSelected) {
         if (isSelected) {
-            holder.mSelectedIv.setImageResource(R.drawable.ic_image_selected);
+            holder.mSelectedIv.setImageResource(R.drawable.mediaselector_icon_selected);
             holder.mMasking.setAlpha(0.5f);
         } else {
-            holder.mSelectedIv.setImageResource(R.drawable.ic_image_unselect);
+            holder.mSelectedIv.setImageResource(R.drawable.mediaselector_icon_unselect);
             holder.mMasking.setAlpha(0f);
         }
     }

@@ -83,7 +83,7 @@ public class MediaPreviewActivity extends MediaBaseActivity implements MediaPrev
 
     @Override
     protected int bindContentView() {
-        return R.layout.activity_media_preview;
+        return R.layout.mediaselector_activity_media_preview;
     }
 
     @Override
@@ -120,8 +120,8 @@ public class MediaPreviewActivity extends MediaBaseActivity implements MediaPrev
         mViewPager = findViewById(R.id.mViewPager);
         llBottom = findViewById(R.id.llBottom);
         mSelectTextView = findViewById(R.id.mSelectTextView);
-        mSelectDrawable = ContextCompat.getDrawable(this, R.drawable.ic_image_selected);
-        mUnSelectDrawable = ContextCompat.getDrawable(this, R.drawable.ic_image_unselect);
+        mSelectDrawable = ContextCompat.getDrawable(this, R.drawable.mediaselector_icon_selected);
+        mUnSelectDrawable = ContextCompat.getDrawable(this, R.drawable.mediaselector_icon_unselect);
     }
 
     @Override
