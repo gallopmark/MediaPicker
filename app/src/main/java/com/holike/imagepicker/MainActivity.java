@@ -16,7 +16,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.ImageViewTarget;
 import pony.xcode.media.loader.ImageLoader;
-import pony.xcode.media.MediaSelector;
+import pony.xcode.media.MediaPicker;
 import pony.xcode.media.utils.ImageUtil;
 
 import java.util.ArrayList;
@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         imageView = findViewById(R.id.iv_image);
-        MediaSelector.builder().maxSelectCount(6)
+        MediaPicker.builder().maxSelectCount(6)
 //                .sizeLimit(5 * 1024 * 1024)
                 .start(this);
     }
@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK && data != null) {
-            ArrayList<String> images = data.getStringArrayListExtra(MediaSelector.SELECT_RESULT);
+            ArrayList<String> images = data.getStringArrayListExtra(MediaPicker.SELECT_RESULT);
             Glide.with(this).load(images.get(0)).into(imageView);
         }
     }

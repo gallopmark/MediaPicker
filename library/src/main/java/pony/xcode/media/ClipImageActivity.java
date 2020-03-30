@@ -51,9 +51,9 @@ public class ClipImageActivity extends MediaBaseActivity {
                                        ArrayList<String> selected) {
         Bundle bundle = new Bundle();
         bundle.putInt("requestCode", requestCode);
-        bundle.putBoolean(MediaSelector.IS_VIEW_IMAGE, isViewImage);
-        bundle.putBoolean(MediaSelector.USE_CAMERA, useCamera);
-        bundle.putStringArrayList(MediaSelector.SELECTED, selected);
+        bundle.putBoolean(MediaPicker.IS_VIEW_IMAGE, isViewImage);
+        bundle.putBoolean(MediaPicker.USE_CAMERA, useCamera);
+        bundle.putStringArrayList(MediaPicker.SELECTED, selected);
         return bundle;
     }
 
@@ -75,9 +75,9 @@ public class ClipImageActivity extends MediaBaseActivity {
         } else {
             mRequestCode = bundle.getInt("requestCode", 0);
             MediaPickerActivity.openActivity(this, mRequestCode, true,
-                    bundle.getBoolean(MediaSelector.IS_VIEW_IMAGE, true),
-                    bundle.getBoolean(MediaSelector.USE_CAMERA, true), 0,
-                    bundle.getStringArrayList(MediaSelector.SELECTED), 0, 0, 0,
+                    bundle.getBoolean(MediaPicker.IS_VIEW_IMAGE, true),
+                    bundle.getBoolean(MediaPicker.USE_CAMERA, true), 0,
+                    bundle.getStringArrayList(MediaPicker.SELECTED), 0, 0, 0,
                     MediaConfig.MODE_IMAGE);
         }
     }
@@ -107,9 +107,9 @@ public class ClipImageActivity extends MediaBaseActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == mRequestCode && data != null) {
-            ArrayList<String> images = data.getStringArrayListExtra(MediaSelector.SELECT_RESULT);
+            ArrayList<String> images = data.getStringArrayListExtra(MediaPicker.SELECT_RESULT);
             if (images == null || images.isEmpty()) return;
-            isCameraImage = data.getBooleanExtra(MediaSelector.IS_CAMERA_IMAGE, false);
+            isCameraImage = data.getBooleanExtra(MediaPicker.IS_CAMERA_IMAGE, false);
             Bitmap bitmap = ImageUtil.decodeSampledBitmapFromFile(images.get(0), 720, 1080);
             if (bitmap != null) {
                 mClipImageView.setBitmapData(bitmap);
@@ -132,8 +132,8 @@ public class ClipImageActivity extends MediaBaseActivity {
             ArrayList<String> selectImages = new ArrayList<>();
             selectImages.add(imagePath);
             Intent intent = new Intent();
-            intent.putStringArrayListExtra(MediaSelector.SELECT_RESULT, selectImages);
-            intent.putExtra(MediaSelector.IS_CAMERA_IMAGE, isCameraImage);
+            intent.putStringArrayListExtra(MediaPicker.SELECT_RESULT, selectImages);
+            intent.putExtra(MediaPicker.IS_CAMERA_IMAGE, isCameraImage);
             setResult(RESULT_OK, intent);
         }
         finish();

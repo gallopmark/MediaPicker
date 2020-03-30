@@ -14,7 +14,7 @@ import android.widget.TextView;
 import pony.xcode.media.MediaConfig;
 import pony.xcode.media.R;
 import pony.xcode.media.bean.MediaBean;
-import pony.xcode.media.MediaSelector;
+import pony.xcode.media.MediaPicker;
 import pony.xcode.media.utils.DoubleUtils;
 
 import java.util.ArrayList;
@@ -89,7 +89,7 @@ public class MediaGridAdapter extends RecyclerView.Adapter<BaseViewHolder> {
         } else {
             final MediaBean mediaBean = getImageItem(position);
             final ImageViewHolder holder = (ImageViewHolder) viewHolder;
-            MediaSelector.getDisplacer().displayGrid(mContext, mediaBean.getPath(), holder.mImageView);
+            MediaPicker.getDisplacer().displayGrid(mContext, mediaBean.getPath(), holder.mImageView);
 //            Glide.with(mContext).load(new File(imageItem.getPath()))
 //                    .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.NONE))
 //                    .into(holder.mImageView);

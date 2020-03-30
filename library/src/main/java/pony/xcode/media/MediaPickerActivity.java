@@ -140,14 +140,14 @@ public class MediaPickerActivity extends MediaBaseActivity implements View.OnCli
                                        int videoQuality, long sizeLimit,
                                        int mode) {
         Bundle bundle = new Bundle();
-        bundle.putInt(MediaSelector.CHOOSE_MODE, mode);
-        bundle.putBoolean(MediaSelector.IS_SINGLE, isSingle);
-        bundle.putBoolean(MediaSelector.IS_VIEW_IMAGE, isViewImage);
-        bundle.putBoolean(MediaSelector.USE_CAMERA, useCamera);
-        bundle.putInt(MediaSelector.MAX_SELECT_COUNT, maxSelectCount);
-        bundle.putInt(MediaSelector.DURATION_LIMIT, durationLimit);
-        bundle.putInt(MediaSelector.VIDEO_QUALITY, videoQuality);
-        bundle.putLong(MediaSelector.SIZE_LIMIT, sizeLimit);
+        bundle.putInt(MediaPicker.CHOOSE_MODE, mode);
+        bundle.putBoolean(MediaPicker.IS_SINGLE, isSingle);
+        bundle.putBoolean(MediaPicker.IS_VIEW_IMAGE, isViewImage);
+        bundle.putBoolean(MediaPicker.USE_CAMERA, useCamera);
+        bundle.putInt(MediaPicker.MAX_SELECT_COUNT, maxSelectCount);
+        bundle.putInt(MediaPicker.DURATION_LIMIT, durationLimit);
+        bundle.putInt(MediaPicker.VIDEO_QUALITY, videoQuality);
+        bundle.putLong(MediaPicker.SIZE_LIMIT, sizeLimit);
         mTempSelectImages = selected;
         return bundle;
     }
@@ -155,8 +155,8 @@ public class MediaPickerActivity extends MediaBaseActivity implements View.OnCli
     public static void onPreviewResult(Activity activity, List<MediaBean> selectItems, boolean isConfirm) {
         tempSelectImages = selectItems;
         Intent intent = new Intent();
-        intent.putExtra(MediaSelector.IS_CONFIRM, isConfirm);
-        activity.setResult(MediaSelector.PREVIEW_RESULT_CODE, intent);
+        intent.putExtra(MediaPicker.IS_CONFIRM, isConfirm);
+        activity.setResult(MediaPicker.PREVIEW_RESULT_CODE, intent);
     }
 
     @Override
@@ -175,11 +175,11 @@ public class MediaPickerActivity extends MediaBaseActivity implements View.OnCli
     public void onGetIntent() {
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
-            mChooseMode = bundle.getInt(MediaSelector.CHOOSE_MODE, MediaConfig.MODE_IMAGE);
-            mMaxCount = bundle.getInt(MediaSelector.MAX_SELECT_COUNT, 0);
-            isSingle = bundle.getBoolean(MediaSelector.IS_SINGLE, false);
-            isViewImage = bundle.getBoolean(MediaSelector.IS_VIEW_IMAGE, true);
-            isUseCamera = bundle.getBoolean(MediaSelector.USE_CAMERA, true);
+            mChooseMode = bundle.getInt(MediaPicker.CHOOSE_MODE, MediaConfig.MODE_IMAGE);
+            mMaxCount = bundle.getInt(MediaPicker.MAX_SELECT_COUNT, 0);
+            isSingle = bundle.getBoolean(MediaPicker.IS_SINGLE, false);
+            isViewImage = bundle.getBoolean(MediaPicker.IS_VIEW_IMAGE, true);
+            isUseCamera = bundle.getBoolean(MediaPicker.USE_CAMERA, true);
             if (mTempSelectImages != null) {
                 this.mSelectedImages = new ArrayList<>();
                 for (String path : mTempSelectImages) {
@@ -350,13 +350,13 @@ public class MediaPickerActivity extends MediaBaseActivity implements View.OnCli
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == MediaSelector.PREVIEW_RESULT_CODE) {
+        if (requestCode == MediaPicker.PREVIEW_RESULT_CODE) {
             if (tempSelectImages != null) {
                 mGridAdapter.setSelectedImages(tempSelectImages);
                 setSelectImageCount(mGridAdapter.getSelectedItems().size());
                 tempSelectImages = null;
             }
-            if (data != null && data.getBooleanExtra(MediaSelector.IS_CONFIRM, false)) {
+            if (data != null && data.getBooleanExtra(MediaPicker.IS_CONFIRM, false)) {
                 //如果用户在预览页点击了确定，就直接把用户选中的图片返回给用户。
                 confirm();
             }

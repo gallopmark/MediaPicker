@@ -35,7 +35,7 @@ import pony.xcode.media.dialog.PictureLoadingDialog;
 import pony.xcode.media.model.LocalMediaSource;
 import pony.xcode.media.utils.AndroidQTransformUtils;
 import pony.xcode.media.utils.DateUtils;
-import pony.xcode.media.MediaSelector;
+import pony.xcode.media.MediaPicker;
 import pony.xcode.media.utils.DialogUtils;
 import pony.xcode.media.utils.MediaUtil;
 import pony.xcode.media.utils.SDKVersionUtils;
@@ -288,7 +288,7 @@ public class MediaPickerPresenter implements Handler.Callback {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 mExternalSetting = finishWhenCancel;
-                MediaSelector.startAppSettings(activity);
+                MediaPicker.startAppSettings(activity);
             }
         }, finishWhenCancel);
     }
@@ -386,13 +386,13 @@ public class MediaPickerPresenter implements Handler.Callback {
             if (videoUri != null) {
                 Bundle extras = activity.getIntent().getExtras();
                 if (extras != null) {
-                    int durationLimit = extras.getInt(MediaSelector.DURATION_LIMIT, 0);
+                    int durationLimit = extras.getInt(MediaPicker.DURATION_LIMIT, 0);
                     if (durationLimit > 0) {
                         captureIntent.putExtra(MediaStore.EXTRA_DURATION_LIMIT, durationLimit);
                     }
-                    captureIntent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, extras.getInt(MediaSelector.VIDEO_QUALITY,
+                    captureIntent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, extras.getInt(MediaPicker.VIDEO_QUALITY,
                             MediaConfig.DEFAULT_VIDEO_QUALITY));
-                    long sizeLimit = extras.getLong(MediaSelector.SIZE_LIMIT, 0);
+                    long sizeLimit = extras.getLong(MediaPicker.SIZE_LIMIT, 0);
                     if (sizeLimit > 0) {  //限制了录制大小 则限制的录制时间将不起作用
                         captureIntent.putExtra(MediaStore.EXTRA_SIZE_LIMIT, sizeLimit);
                     }
@@ -483,8 +483,8 @@ public class MediaPickerPresenter implements Handler.Callback {
 
     public void setResult(int resultCode, ArrayList<String> images, boolean isCameraImage) {
         Intent intent = new Intent();
-        intent.putStringArrayListExtra(MediaSelector.SELECT_RESULT, images);
-        intent.putExtra(MediaSelector.IS_CAMERA_IMAGE, isCameraImage);
+        intent.putStringArrayListExtra(MediaPicker.SELECT_RESULT, images);
+        intent.putExtra(MediaPicker.IS_CAMERA_IMAGE, isCameraImage);
         activity.setResult(resultCode, intent);
     }
 
@@ -507,6 +507,6 @@ public class MediaPickerPresenter implements Handler.Callback {
         if (mLocalMediaSource != null) {
             mLocalMediaSource.release();
         }
-        MediaSelector.gcDisplacer();
+        MediaPicker.gcDisplacer();
     }
 }

@@ -12,7 +12,7 @@ import android.widget.TextView;
 import pony.xcode.media.R;
 import pony.xcode.media.bean.MediaFolder;
 import pony.xcode.media.bean.MediaBean;
-import pony.xcode.media.MediaSelector;
+import pony.xcode.media.MediaPicker;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +46,7 @@ public class MediaFolderAdapter extends RecyclerView.Adapter<MediaFolderAdapter.
         holder.ivSelect.setVisibility(mSelectItem == position ? View.VISIBLE : View.GONE);
         String text = images != null && !images.isEmpty() ? images.size() + "张" : "0张";
         if (images != null && !images.isEmpty()) {
-            MediaSelector.getDisplacer().displayFolder(mContext, images.get(0).getPath(), holder.ivImage);
+            MediaPicker.getDisplacer().displayFolder(mContext, images.get(0).getPath(), holder.ivImage);
 //            Glide.with(mContext).load(new File(images.get(0).getPath()))
 //                    .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.NONE))
 //                    .into(holder.ivImage);

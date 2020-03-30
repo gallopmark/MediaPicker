@@ -30,8 +30,8 @@ abstract class MediaBaseActivity extends AppCompatActivity {
     private void setupToolbar() {
         Toolbar toolbar = findViewById(R.id.toolBar);
         int titleHeight = getResources().getDimensionPixelSize(R.dimen.toolbar_height);
-        if (MediaSelector.getTitleHeight() > 0) {
-            titleHeight = MediaSelector.getTitleHeight();
+        if (MediaPicker.getTitleHeight() > 0) {
+            titleHeight = MediaPicker.getTitleHeight();
         }
         ViewGroup.LayoutParams lp = toolbar.getLayoutParams();
         lp.height = titleHeight;

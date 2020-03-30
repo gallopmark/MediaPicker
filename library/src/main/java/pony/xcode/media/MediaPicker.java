@@ -13,7 +13,7 @@ import pony.xcode.media.loader.ImageLoader;
 
 import java.util.ArrayList;
 
-public class MediaSelector {
+public class MediaPicker {
 
     public static final int DEFAULT_REQUEST_CODE = 996;
     /**
@@ -70,12 +70,12 @@ public class MediaSelector {
     private int mVideoQuality;  //视频拍摄质量 只能是 0和1 不存在中间0.5
     private long mSizeLimit; //设置获取视频文件的大小，以字节为单位．
 
-    private MediaSelector(ImagePickerBuilder builder) {
+    private MediaPicker(ImagePickerBuilder builder) {
         init(builder);
         this.isCrop = builder.isCrop;
     }
 
-    private MediaSelector(VideoPickerBuilder builder) {
+    private MediaPicker(VideoPickerBuilder builder) {
         init(builder);
         this.mDurationLimit = builder.mDurationLimit;
         this.mVideoQuality = builder.mVideoQuality;
@@ -207,8 +207,8 @@ public class MediaSelector {
             return this;
         }
 
-        public MediaSelector create() {
-            return new MediaSelector(this);
+        public MediaPicker create() {
+            return new MediaPicker(this);
         }
 
         public void start(Activity activity) {
@@ -315,8 +315,8 @@ public class MediaSelector {
             return this;
         }
 
-        public MediaSelector create() {
-            return new MediaSelector(this);
+        public MediaPicker create() {
+            return new MediaPicker(this);
         }
 
         public void start(Activity activity) {

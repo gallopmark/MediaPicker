@@ -64,7 +64,7 @@ public class MediaPreviewActivity extends MediaBaseActivity implements MediaPrev
         tempSelectImages = selectImages;
         Intent intent = new Intent(activity, MediaPreviewActivity.class);
         intent.putExtras(dataPackages(mode, images, selectImages, isSingle, maxSelectCount, position));
-        activity.startActivityForResult(intent, MediaSelector.PREVIEW_RESULT_CODE);
+        activity.startActivityForResult(intent, MediaPicker.PREVIEW_RESULT_CODE);
     }
 
     private static Bundle dataPackages(int mode, List<MediaBean> images, List<MediaBean> selectImages, boolean isSingle,
@@ -72,10 +72,10 @@ public class MediaPreviewActivity extends MediaBaseActivity implements MediaPrev
         tempImages = images;
         tempSelectImages = selectImages;
         Bundle bundle = new Bundle();
-        bundle.putInt(MediaSelector.CHOOSE_MODE, mode);
-        bundle.putInt(MediaSelector.MAX_SELECT_COUNT, maxSelectCount);
-        bundle.putBoolean(MediaSelector.IS_SINGLE, isSingle);
-        bundle.putInt(MediaSelector.POSITION, position);
+        bundle.putInt(MediaPicker.CHOOSE_MODE, mode);
+        bundle.putInt(MediaPicker.MAX_SELECT_COUNT, maxSelectCount);
+        bundle.putBoolean(MediaPicker.IS_SINGLE, isSingle);
+        bundle.putInt(MediaPicker.POSITION, position);
         return bundle;
     }
 
@@ -94,9 +94,9 @@ public class MediaPreviewActivity extends MediaBaseActivity implements MediaPrev
     public void onGetIntent() {
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
-            mChooseMode = bundle.getInt(MediaSelector.CHOOSE_MODE, MediaConfig.MODE_IMAGE);
-            mMaxCount = bundle.getInt(MediaSelector.MAX_SELECT_COUNT, 0);
-            isSingle = bundle.getBoolean(MediaSelector.IS_SINGLE, false);
+            mChooseMode = bundle.getInt(MediaPicker.CHOOSE_MODE, MediaConfig.MODE_IMAGE);
+            mMaxCount = bundle.getInt(MediaPicker.MAX_SELECT_COUNT, 0);
+            isSingle = bundle.getBoolean(MediaPicker.IS_SINGLE, false);
         }
         if (tempImages != null) {
             mImages.addAll(tempImages);
@@ -149,7 +149,7 @@ public class MediaPreviewActivity extends MediaBaseActivity implements MediaPrev
 //        ImagePagerAdapter pagerAdapter = new ImagePagerAdapter(this, mImages);
         mViewPager.clearOnPageChangeListeners();
         mViewPager.setOffscreenPageLimit(1);
-        int initPosition = getIntent().getIntExtra(MediaSelector.POSITION, 0);
+        int initPosition = getIntent().getIntExtra(MediaPicker.POSITION, 0);
         final MediaBasePagerAdapter pagerAdapter;
         if (mChooseMode == MediaConfig.MODE_VIDEO) {
             pagerAdapter = new VideoPagerAdapter(this, mImages, mViewPager, initPosition);
