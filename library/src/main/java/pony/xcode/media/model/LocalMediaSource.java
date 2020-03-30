@@ -18,7 +18,6 @@ import pony.xcode.media.MediaConfig;
 import pony.xcode.media.R;
 import pony.xcode.media.bean.MediaFolder;
 import pony.xcode.media.bean.MediaBean;
-import pony.xcode.media.utils.AndroidQTransformUtils;
 import pony.xcode.media.utils.MediaUtil;
 import pony.xcode.media.utils.SDKVersionUtils;
 import pony.xcode.media.utils.StringUtils;
@@ -86,12 +85,13 @@ public class LocalMediaSource implements Handler.Callback {
                                 String mimeType = data.getString(data.getColumnIndex(PROJECTION[2]));
                                 if (isAndroidQ) {  //适配 android Q
                                     long id = data.getLong(data.getColumnIndex(PROJECTION[0]));
-                                    path = AndroidQTransformUtils.parseVideoPathToAndroidQ(context, getRealPathAndroid_Q(id), mimeType);
+                                    path = getRealPathAndroid_Q(id);
+//                                    path = AndroidQTransformUtils.parseVideoPathToAndroidQ(context, getRealPathAndroid_Q(id), mimeType);
                                 }
                                 long time = data.getLong(data.getColumnIndex(PROJECTION[3]));
                                 String name = data.getString(data.getColumnIndex(PROJECTION[4]));
-                                if (!TextUtils.equals(MediaUtil.getExtensionName(path), "downloading") && MediaUtil.isFileExists(path)) {
-                                    images.add(new MediaBean(path, time, name, mimeType, duration, size));
+                                if (!TextUtils.equals(MediaUtil.getExtensionName(path), "downloading") && MediaUtil.isFileExists(MediaUtil.getPath(context, Uri.parse(path)))) {
+                                    images.add(new MediaBean(path,time,name,mimeType,duration,size));
                                 }
                             }
                         } else {  //默认为获取图片
@@ -100,12 +100,13 @@ public class LocalMediaSource implements Handler.Callback {
                                 String mimeType = data.getString(data.getColumnIndex(PROJECTION[2]));
                                 if (isAndroidQ) { //适配 android Q
                                     long id = data.getLong(data.getColumnIndex(PROJECTION[0]));
-                                    path = AndroidQTransformUtils.parseImagePathToAndroidQ(context, getRealPathAndroid_Q(id), mimeType);
+                                    path = getRealPathAndroid_Q(id);
+//                                    path = AndroidQTransformUtils.parseImagePathToAndroidQ(context, getRealPathAndroid_Q(id), mimeType);
                                 }
                                 long time = data.getLong(data.getColumnIndex(PROJECTION[3]));
                                 String name = data.getString(data.getColumnIndex(PROJECTION[4]));
                                 //过滤未下载完成或者不存在的文件
-                                if (!TextUtils.equals(MediaUtil.getExtensionName(path), "downloading") && MediaUtil.isFileExists(path)) {
+                                if (!TextUtils.equals(MediaUtil.getExtensionName(path), "downloading") && MediaUtil.isFileExists(MediaUtil.getPath(context, Uri.parse(path)))) {
                                     images.add(new MediaBean(path, time, name, mimeType));
                                 }
                             }

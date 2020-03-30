@@ -29,8 +29,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         imageView = findViewById(R.id.iv_image);
-        MediaSelector.videoBuilder().maxSelectCount(6)
-                .durationLimit(15)
+        MediaSelector.builder().maxSelectCount(6)
 //                .sizeLimit(5 * 1024 * 1024)
                 .start(this);
     }
