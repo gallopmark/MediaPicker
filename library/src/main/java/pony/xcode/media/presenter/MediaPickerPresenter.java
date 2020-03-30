@@ -43,6 +43,7 @@ import pony.xcode.media.view.MediaPickerView;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 public class MediaPickerPresenter implements Handler.Callback {
 
@@ -474,16 +475,16 @@ public class MediaPickerPresenter implements Handler.Callback {
         if (MediaUtil.isFileExists(filePath)) {
             activity.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
                     MediaUtil.getProviderUri(activity, new File(filePath))));
-            ArrayList<String> images = new ArrayList<>();
-            images.add(filePath);
-            setResult(Activity.RESULT_OK, images, true);
+            ArrayList<MediaBean> imageBeans = new ArrayList<>();
+            imageBeans.add(new MediaBean(filePath, filePath));
+            setResult(Activity.RESULT_OK, imageBeans, true);
             activity.finish();
         }
     }
 
-    public void setResult(int resultCode, ArrayList<String> images, boolean isCameraImage) {
+    public void setResult(int resultCode, ArrayList<MediaBean> imageBeans, boolean isCameraImage) {
         Intent intent = new Intent();
-        intent.putStringArrayListExtra(MediaPicker.SELECT_RESULT, images);
+        intent.putParcelableArrayListExtra(MediaPicker.SELECT_RESULT, imageBeans);
         intent.putExtra(MediaPicker.IS_CAMERA_IMAGE, isCameraImage);
         activity.setResult(resultCode, intent);
     }

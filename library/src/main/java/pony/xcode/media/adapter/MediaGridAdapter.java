@@ -36,7 +36,7 @@ public class MediaGridAdapter extends RecyclerView.Adapter<BaseViewHolder> {
     private OnItemClickListener onItemClickListener;
     private OnItemSelectListener onItemSelectListener;
 
-    private List<MediaBean> mSelectedItems;
+    private ArrayList<MediaBean> mSelectedItems;
 
     /**
      * @param maxCount    图片的最大选择数量，小于等于0时，不限数量，isSingle为false时才有用。
@@ -223,7 +223,7 @@ public class MediaGridAdapter extends RecyclerView.Adapter<BaseViewHolder> {
     }
 
 
-    public List<MediaBean> getSelectedItems() {
+    public ArrayList<MediaBean> getSelectedItems() {
         return mSelectedItems;
     }
 

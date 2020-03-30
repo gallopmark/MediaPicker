@@ -56,7 +56,6 @@ public class MediaPicker {
 
     private static int mTitleHeight;  //设置标题高度
     private static ImageLoader mImageLoader; //图片加载器
-    private boolean isCrop = false;
     private boolean isUseCamera = true;
     private boolean isSingle = false;
     private boolean isClickPreview = true;
@@ -72,7 +71,6 @@ public class MediaPicker {
 
     private MediaPicker(ImagePickerBuilder builder) {
         init(builder);
-        this.isCrop = builder.isCrop;
     }
 
     private MediaPicker(VideoPickerBuilder builder) {
@@ -136,7 +134,6 @@ public class MediaPicker {
     }
 
     public static class ImagePickerBuilder extends BaseBuilder {
-        private boolean isCrop = false;
 
         public ImagePickerBuilder() {
             mChooseMode = MODE_IMAGE;
@@ -147,14 +144,6 @@ public class MediaPicker {
          */
         public ImagePickerBuilder titleHeight(int titleHeight) {
             this.mTitleHeight = titleHeight;
-            return this;
-        }
-
-        /**
-         * 是否使用图片剪切功能。默认false。如果使用了图片剪切功能，相册只能单选。
-         */
-        public ImagePickerBuilder isCrop(boolean isCrop) {
-            this.isCrop = isCrop;
             return this;
         }
 
@@ -352,20 +341,16 @@ public class MediaPicker {
      * 打开相册
      */
     public void start(Activity activity, int requestCode) {
-        if (isCrop) {
-            ClipImageActivity.openActivity(activity, requestCode, isClickPreview, isUseCamera, mSelected);
-        } else {
-            int mode = MediaConfig.MODE_IMAGE;
-            if (mChooseMode == MODE_VIDEO) {
-                mode = MediaConfig.MODE_VIDEO;
-            }
-            MediaPickerActivity.openActivity(activity, requestCode,
-                    isSingle, isClickPreview,
-                    isUseCamera, mMaxSelectCount,
-                    mSelected, mDurationLimit,
-                    mVideoQuality, mSizeLimit,
-                    mode);
+        int mode = MediaConfig.MODE_IMAGE;
+        if (mChooseMode == MODE_VIDEO) {
+            mode = MediaConfig.MODE_VIDEO;
         }
+        MediaPickerActivity.openActivity(activity, requestCode,
+                isSingle, isClickPreview,
+                isUseCamera, mMaxSelectCount,
+                mSelected, mDurationLimit,
+                mVideoQuality, mSizeLimit,
+                mode);
     }
 
     public void start(Fragment fragment) {
@@ -376,20 +361,16 @@ public class MediaPicker {
      * 打开相册
      */
     public void start(Fragment fragment, int requestCode) {
-        if (isCrop) {
-            ClipImageActivity.openActivity(fragment, requestCode, isClickPreview, isUseCamera, mSelected);
-        } else {
-            int mode = MediaConfig.MODE_IMAGE;
-            if (mChooseMode == MODE_VIDEO) {
-                mode = MediaConfig.MODE_VIDEO;
-            }
-            MediaPickerActivity.openActivity(fragment, requestCode,
-                    isSingle, isClickPreview,
-                    isUseCamera, mMaxSelectCount,
-                    mSelected, mDurationLimit,
-                    mVideoQuality, mSizeLimit,
-                    mode);
+        int mode = MediaConfig.MODE_IMAGE;
+        if (mChooseMode == MODE_VIDEO) {
+            mode = MediaConfig.MODE_VIDEO;
         }
+        MediaPickerActivity.openActivity(fragment, requestCode,
+                isSingle, isClickPreview,
+                isUseCamera, mMaxSelectCount,
+                mSelected, mDurationLimit,
+                mVideoQuality, mSizeLimit,
+                mode);
     }
 
     public void start(android.app.Fragment fragment) {
@@ -397,20 +378,16 @@ public class MediaPicker {
     }
 
     public void start(android.app.Fragment fragment, int requestCode) {
-        if (isCrop) {
-            ClipImageActivity.openActivity(fragment, requestCode, isClickPreview, isUseCamera, mSelected);
-        } else {
-            int mode = MediaConfig.MODE_IMAGE;
-            if (mChooseMode == MODE_VIDEO) {
-                mode = MediaConfig.MODE_VIDEO;
-            }
-            MediaPickerActivity.openActivity(fragment, requestCode,
-                    isSingle, isClickPreview,
-                    isUseCamera, mMaxSelectCount,
-                    mSelected, mDurationLimit,
-                    mVideoQuality, mSizeLimit,
-                    mode);
+        int mode = MediaConfig.MODE_IMAGE;
+        if (mChooseMode == MODE_VIDEO) {
+            mode = MediaConfig.MODE_VIDEO;
         }
+        MediaPickerActivity.openActivity(fragment, requestCode,
+                isSingle, isClickPreview,
+                isUseCamera, mMaxSelectCount,
+                mSelected, mDurationLimit,
+                mVideoQuality, mSizeLimit,
+                mode);
     }
 
     public static void startAppSettings(Activity activity) {

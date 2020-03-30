@@ -15,6 +15,8 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.ImageViewTarget;
+
+import pony.xcode.media.bean.MediaBean;
 import pony.xcode.media.loader.ImageLoader;
 import pony.xcode.media.MediaPicker;
 import pony.xcode.media.utils.ImageUtil;
@@ -38,8 +40,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK && data != null) {
-            ArrayList<String> images = data.getStringArrayListExtra(MediaPicker.SELECT_RESULT);
-            Glide.with(this).load(images.get(0)).into(imageView);
+            ArrayList<MediaBean> images = data.getParcelableArrayListExtra(MediaPicker.SELECT_RESULT);
+            Glide.with(this).load(images.get(0).getPath()).into(imageView);
         }
     }
 

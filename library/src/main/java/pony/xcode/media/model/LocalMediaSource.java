@@ -41,7 +41,7 @@ public class LocalMediaSource implements Handler.Callback {
             MediaStore.MediaColumns.DATE_ADDED, //添加的时间
             MediaStore.MediaColumns.DISPLAY_NAME, //名称
             MediaStore.MediaColumns.DURATION,   //时长
-            MediaStore.MediaColumns.SIZE    //大小
+            MediaStore.MediaColumns.SIZE,    //大小
     };
     private static final String NOT_GIF = "!='image/gif'";  //过滤掉gif图
     private static final String SELECTION_NOT_GIF = MediaStore.Files.FileColumns.MEDIA_TYPE + "=?"
@@ -73,41 +73,64 @@ public class LocalMediaSource implements Handler.Callback {
                             while (data.moveToNext()) {
                                 long duration = data.getLong(data.getColumnIndex(PROJECTION[5]));
                                 long size = data.getLong(data.getColumnIndex(PROJECTION[6]));
-                                if (duration == 0) {
-                                    // 时长如果为0，就当做损坏的视频处理过滤掉
+                                if (duration == 0 || size <= 0) {
+                                    // 时长如果为0，就当做损坏的视频处理过滤掉、视频大小为0过滤掉
                                     continue;
                                 }
-                                if (size <= 0) {
-                                    // 视频大小为0过滤掉
-                                    continue;
-                                }
-                                String path = data.getString(data.getColumnIndex(PROJECTION[1]));
-                                String mimeType = data.getString(data.getColumnIndex(PROJECTION[2]));
+                                String path, realPath;
                                 if (isAndroidQ) {  //适配 android Q
                                     long id = data.getLong(data.getColumnIndex(PROJECTION[0]));
                                     path = getRealPathAndroid_Q(id);
-//                                    path = AndroidQTransformUtils.parseVideoPathToAndroidQ(context, getRealPathAndroid_Q(id), mimeType);
+                                    realPath = MediaUtil.getPath(context, Uri.parse(path));
+                                } else {
+                                    //android Q 以下为真实路径
+                                    path = data.getString(data.getColumnIndex(PROJECTION[1]));
+                                    realPath = path;
                                 }
-                                long time = data.getLong(data.getColumnIndex(PROJECTION[3]));
-                                String name = data.getString(data.getColumnIndex(PROJECTION[4]));
-                                if (!TextUtils.equals(MediaUtil.getExtensionName(path), "downloading") && MediaUtil.isFileExists(MediaUtil.getPath(context, Uri.parse(path)))) {
-                                    images.add(new MediaBean(path,time,name,mimeType,duration,size));
+                                if (!MediaUtil.isFileExists(realPath)) {  //文件不存在跳过
+                                    continue;
+                                }
+                                if (!TextUtils.equals(MediaUtil.getExtensionName(path), "downloading")) {
+                                    String mimeType = data.getString(data.getColumnIndex(PROJECTION[2]));
+                                    long time = data.getLong(data.getColumnIndex(PROJECTION[3]));
+                                    String name = data.getString(data.getColumnIndex(PROJECTION[4]));
+                                    MediaBean mediaBean = new MediaBean();
+                                    mediaBean.setPath(path);
+                                    mediaBean.setRealPath(realPath);
+                                    mediaBean.setMimeType(mimeType);
+                                    mediaBean.setName(name);
+                                    mediaBean.setTime(time);
+                                    mediaBean.setDuration(duration);
+                                    mediaBean.setSize(size);
                                 }
                             }
                         } else {  //默认为获取图片
                             while (data.moveToNext()) {
-                                String path = data.getString(data.getColumnIndex(PROJECTION[1]));
-                                String mimeType = data.getString(data.getColumnIndex(PROJECTION[2]));
-                                if (isAndroidQ) { //适配 android Q
+                                String path, realPath;
+                                if (isAndroidQ) {  //适配 android Q
                                     long id = data.getLong(data.getColumnIndex(PROJECTION[0]));
                                     path = getRealPathAndroid_Q(id);
-//                                    path = AndroidQTransformUtils.parseImagePathToAndroidQ(context, getRealPathAndroid_Q(id), mimeType);
+                                    realPath = MediaUtil.getPath(context, Uri.parse(path));
+                                } else {
+                                    //android Q 以下为真实路径
+                                    path = data.getString(data.getColumnIndex(PROJECTION[1]));
+                                    realPath = path;
                                 }
-                                long time = data.getLong(data.getColumnIndex(PROJECTION[3]));
-                                String name = data.getString(data.getColumnIndex(PROJECTION[4]));
+                                if (!MediaUtil.isFileExists(realPath)) {  //文件不存在跳过
+                                    continue;
+                                }
                                 //过滤未下载完成或者不存在的文件
-                                if (!TextUtils.equals(MediaUtil.getExtensionName(path), "downloading") && MediaUtil.isFileExists(MediaUtil.getPath(context, Uri.parse(path)))) {
-                                    images.add(new MediaBean(path, time, name, mimeType));
+                                if (!TextUtils.equals(MediaUtil.getExtensionName(path), "downloading")) {
+                                    String mimeType = data.getString(data.getColumnIndex(PROJECTION[2]));
+                                    long time = data.getLong(data.getColumnIndex(PROJECTION[3]));
+                                    String name = data.getString(data.getColumnIndex(PROJECTION[4]));
+                                    MediaBean mediaBean = new MediaBean();
+                                    mediaBean.setPath(path);
+                                    mediaBean.setRealPath(realPath);
+                                    mediaBean.setMimeType(mimeType);
+                                    mediaBean.setName(name);
+                                    mediaBean.setTime(time);
+                                    images.add(mediaBean);
                                 }
                             }
                         }
