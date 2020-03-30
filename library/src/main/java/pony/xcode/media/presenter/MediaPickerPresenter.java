@@ -43,7 +43,6 @@ import pony.xcode.media.view.MediaPickerView;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
 
 public class MediaPickerPresenter implements Handler.Callback {
 
