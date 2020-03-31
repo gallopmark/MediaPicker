@@ -47,9 +47,6 @@ public class MediaFolderAdapter extends RecyclerView.Adapter<MediaFolderAdapter.
         String text = images != null && !images.isEmpty() ? images.size() + "张" : "0张";
         if (images != null && !images.isEmpty()) {
             MediaPicker.getDisplacer().displayFolder(mContext, images.get(0).getPath(), holder.ivImage);
-//            Glide.with(mContext).load(new File(images.get(0).getPath()))
-//                    .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.NONE))
-//                    .into(holder.ivImage);
         } else {
             holder.ivImage.setImageResource(0);
         }

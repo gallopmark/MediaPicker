@@ -1,6 +1,7 @@
 package pony.xcode.media.model;
 
 import android.annotation.SuppressLint;
+import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
 
@@ -78,9 +79,9 @@ public class LocalMediaSource implements Handler.Callback {
                                     continue;
                                 }
                                 String path, realPath;
+                                long id = data.getLong(data.getColumnIndex(PROJECTION[0]));
                                 if (isAndroidQ) {  //适配 android Q
-                                    long id = data.getLong(data.getColumnIndex(PROJECTION[0]));
-                                    path = getRealPathAndroid_Q(id);
+                                    path = ContentUris.withAppendedId(QUERY_URI, id).toString();
                                     realPath = MediaUtil.getPath(context, Uri.parse(path));
                                 } else {
                                     //android Q 以下为真实路径
@@ -95,6 +96,7 @@ public class LocalMediaSource implements Handler.Callback {
                                     long time = data.getLong(data.getColumnIndex(PROJECTION[3]));
                                     String name = data.getString(data.getColumnIndex(PROJECTION[4]));
                                     MediaBean mediaBean = new MediaBean();
+                                    mediaBean.setUri(ContentUris.withAppendedId(QUERY_URI, id));
                                     mediaBean.setPath(path);
                                     mediaBean.setRealPath(realPath);
                                     mediaBean.setMimeType(mimeType);
@@ -102,14 +104,15 @@ public class LocalMediaSource implements Handler.Callback {
                                     mediaBean.setTime(time);
                                     mediaBean.setDuration(duration);
                                     mediaBean.setSize(size);
+                                    images.add(mediaBean);
                                 }
                             }
                         } else {  //默认为获取图片
                             while (data.moveToNext()) {
                                 String path, realPath;
+                                long id = data.getLong(data.getColumnIndex(PROJECTION[0]));
                                 if (isAndroidQ) {  //适配 android Q
-                                    long id = data.getLong(data.getColumnIndex(PROJECTION[0]));
-                                    path = getRealPathAndroid_Q(id);
+                                    path = ContentUris.withAppendedId(QUERY_URI, id).toString();
                                     realPath = MediaUtil.getPath(context, Uri.parse(path));
                                 } else {
                                     //android Q 以下为真实路径
@@ -125,6 +128,7 @@ public class LocalMediaSource implements Handler.Callback {
                                     long time = data.getLong(data.getColumnIndex(PROJECTION[3]));
                                     String name = data.getString(data.getColumnIndex(PROJECTION[4]));
                                     MediaBean mediaBean = new MediaBean();
+                                    mediaBean.setUri(ContentUris.withAppendedId(QUERY_URI, id));
                                     mediaBean.setPath(path);
                                     mediaBean.setRealPath(realPath);
                                     mediaBean.setMimeType(mimeType);
@@ -164,17 +168,6 @@ public class LocalMediaSource implements Handler.Callback {
                 return getSelectionArgsForSingleMediaType(MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO);
         }
         return null;
-    }
-
-    /**
-     * 适配Android Q
-     */
-    private String getRealPathAndroid_Q(long id) {
-        return QUERY_URI.buildUpon().appendPath(MediaUtil.toString(id)).build().toString();
-//        if (!TextUtils.isEmpty(path) && path.startsWith(MediaConfig.CONTENT_PATH)) {
-//            return MediaUtil.getPath(context.getApplicationContext(), Uri.parse(path));
-//        }
-//        return path;
     }
 
     /**

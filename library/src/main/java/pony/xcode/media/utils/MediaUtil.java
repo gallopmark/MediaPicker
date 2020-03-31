@@ -58,7 +58,7 @@ public class MediaUtil {
     public static boolean isFileExists(String filePath) {
         if (TextUtils.isEmpty(filePath)) return false;
         File file = new File(filePath);
-        return file.exists();
+        return file.exists() && file.length() > 0;
     }
 
     public static File createImageFile(Context context) {

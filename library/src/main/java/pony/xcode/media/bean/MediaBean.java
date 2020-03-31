@@ -1,5 +1,6 @@
 package pony.xcode.media.bean;
 
+import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
@@ -16,6 +17,9 @@ public class MediaBean implements Parcelable {
 
     //适配android Q
     private String realPath;
+    private Uri uri;
+    @SuppressWarnings("WeakerAccess")
+    String uriPath;
 
     public MediaBean() {
 
@@ -94,6 +98,20 @@ public class MediaBean implements Parcelable {
         return !TextUtils.isEmpty(path) && path.contains("content://");
     }
 
+    public void setUri(Uri uri) {
+        this.uri = uri;
+        this.uriPath = this.uri.toString();
+    }
+
+    public Uri getUri() {
+        return uri;
+    }
+
+    public String getUriPath() {
+        if (uri == null) return "";
+        return uri.toString();
+    }
+
     /* 图片的路径和创建时间相同就认为是同一张图片*/
     @Override
     public boolean equals(Object obj) {
@@ -120,11 +138,13 @@ public class MediaBean implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.path);
         dest.writeString(this.realPath);
+        dest.writeString(this.getUriPath());
     }
 
     protected MediaBean(Parcel in) {
         this.path = in.readString();
         this.realPath = in.readString();
+        this.uriPath = in.readString();
     }
 
     public static final Parcelable.Creator<MediaBean> CREATOR = new Parcelable.Creator<MediaBean>() {

@@ -2,21 +2,24 @@ package pony.xcode.media.loader;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.ImageViewTarget;
+
 import pony.xcode.media.utils.ImageUtil;
 
 import java.io.Serializable;
 
 /*默认加载器
-* 使用默认加载器时项目中需要引用Glide图片加载器，否则编译出错
-* */
+ * 使用默认加载器时项目中需要引用Glide图片加载器，否则编译出错
+ * */
 public class DefaultImageLoader implements ImageLoader, Serializable {
     @Override
     public void displayFolder(@NonNull Context context, @Nullable String path, @NonNull ImageView target) {
@@ -29,12 +32,15 @@ public class DefaultImageLoader implements ImageLoader, Serializable {
     public void displayGrid(@NonNull Context context, @Nullable String path, @NonNull ImageView target) {
         Glide.with(context).load(path)
                 .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.NONE))
+                .centerCrop()
                 .into(target);
     }
 
     @Override
     public void displayPager(@NonNull Context context, @Nullable String path, @NonNull final ImageView target) {
-        Glide.with(context).asBitmap().load(path)
+        Glide.with(context).asBitmap().apply(new RequestOptions()
+                .diskCacheStrategy(DiskCacheStrategy.NONE))
+                .load(path)
                 .into(new ImageViewTarget<Bitmap>(target) {
                     @Override
                     protected void setResource(@Nullable Bitmap resource) {

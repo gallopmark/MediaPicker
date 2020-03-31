@@ -2,6 +2,7 @@ package pony.xcode.media.adapter;
 
 import android.content.Context;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,9 +20,6 @@ import pony.xcode.media.R;
 import pony.xcode.media.bean.MediaBean;
 import pony.xcode.media.utils.DateUtils;
 import pony.xcode.media.utils.DialogUtils;
-import pony.xcode.media.utils.MediaUtil;
-
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,7 +57,7 @@ public class VideoPagerAdapter extends MediaBasePagerAdapter<MediaBean> {
                 if (isWithinRange(position)) {
                     stopPlaybackIfNoNull();
                     View view = mViewList.get(position);
-                    playVideo(view, images.get(position).getPath());
+                    playVideo(view, images.get(position).getUri());
                 }
             }
         };
@@ -88,7 +86,7 @@ public class VideoPagerAdapter extends MediaBasePagerAdapter<MediaBean> {
         }
     }
 
-    private void playVideo(final View view, final String path) {
+    private void playVideo(final View view, final Uri uri) {
         mPlayingView = view.findViewById(R.id.videoView);
         final ImageView playerButton = view.findViewById(R.id.iv_player);
         final LinearLayout llController = view.findViewById(R.id.ll_controller);
@@ -96,7 +94,7 @@ public class VideoPagerAdapter extends MediaBasePagerAdapter<MediaBean> {
         final SeekBar seekBar = llController.findViewById(R.id.seekBar);
         final TextView currentTextView = llController.findViewById(R.id.tv_current);
         final TextView durationTextView = llController.findViewById(R.id.tv_duration);
-        mPlayingView.setVideoURI(MediaUtil.getProviderUri(mContext, new File(path)));
+        mPlayingView.setVideoURI(uri);
         mPlayingView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(final MediaPlayer mp) {
@@ -148,7 +146,7 @@ public class VideoPagerAdapter extends MediaBasePagerAdapter<MediaBean> {
         playerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                playVideo(view, path);
+                playVideo(view, uri);
             }
         });
     }

@@ -7,16 +7,20 @@
     <uses-permission android:name="android.permission.CAMERA" />
 
     <application>
-
         <provider
             android:name=".CaptureFileProvider"
             android:authorities="${applicationId}.provider"
+            android:enabled="true"
             android:exported="false"
-            android:grantUriPermissions="true">
+            android:grantUriPermissions="true"
+            android:permission="android.permission.MANAGE_DOCUMENTS">
 
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/mediaselector_capture_path" />
+            <intent-filter>
+                <action android:name="android.content.action.DOCUMENTS_PROVIDER" />
+            </intent-filter>
         </provider>
 
         <activity
