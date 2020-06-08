@@ -16,19 +16,59 @@ public class MediaBean implements Parcelable {
     private long size;
 
     //适配android Q
-    private String realPath;
     private Uri uri;
-    @SuppressWarnings("WeakerAccess")
-    String uriPath;
 
     public MediaBean() {
 
     }
 
-    public MediaBean(String path, String realPath) {
-        this.path = path;
-        this.realPath = realPath;
+    public MediaBean(String path, Uri uri) {
+        setPath(path);
+        setUri(uri);
     }
+
+    //图片
+    public MediaBean(String path, long time, String name, String mimeType, long size, Uri uri) {
+        this.path = path;
+        this.time = time;
+        this.name = name;
+        this.mimeType = mimeType;
+        this.size = size;
+        this.uri = uri;
+    }
+
+    //视频
+    public MediaBean(String path, long time, String name, String mimeType, long duration, long size, Uri uri) {
+        this.path = path;
+        this.time = time;
+        this.name = name;
+        this.mimeType = mimeType;
+        this.duration = duration;
+        this.size = size;
+        this.uri = uri;
+    }
+
+    protected MediaBean(Parcel in) {
+        path = in.readString();
+        time = in.readLong();
+        name = in.readString();
+        mimeType = in.readString();
+        duration = in.readLong();
+        size = in.readLong();
+        uri = in.readParcelable(Uri.class.getClassLoader());
+    }
+
+    public static final Creator<MediaBean> CREATOR = new Creator<MediaBean>() {
+        @Override
+        public MediaBean createFromParcel(Parcel in) {
+            return new MediaBean(in);
+        }
+
+        @Override
+        public MediaBean[] newArray(int size) {
+            return new MediaBean[size];
+        }
+    };
 
     public void setPath(String path) {
         this.path = path;
@@ -36,14 +76,6 @@ public class MediaBean implements Parcelable {
 
     public String getPath() {
         return path;
-    }
-
-    public void setRealPath(String realPath) {
-        this.realPath = realPath;
-    }
-
-    public String getRealPath() {
-        return realPath;
     }
 
     public void setTime(long time) {
@@ -94,22 +126,12 @@ public class MediaBean implements Parcelable {
         return "image/gif".equals(mimeType);
     }
 
-    public boolean isUriPath() {
-        return !TextUtils.isEmpty(path) && path.contains("content://");
-    }
-
     public void setUri(Uri uri) {
         this.uri = uri;
-        this.uriPath = this.uri.toString();
     }
 
     public Uri getUri() {
         return uri;
-    }
-
-    public String getUriPath() {
-        if (uri == null) return "";
-        return uri.toString();
     }
 
     /* 图片的路径和创建时间相同就认为是同一张图片*/
@@ -136,26 +158,12 @@ public class MediaBean implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.path);
-        dest.writeString(this.realPath);
-        dest.writeString(this.getUriPath());
+        dest.writeString(path);
+        dest.writeLong(time);
+        dest.writeString(name);
+        dest.writeString(mimeType);
+        dest.writeLong(duration);
+        dest.writeLong(size);
+        dest.writeParcelable(uri, flags);
     }
-
-    protected MediaBean(Parcel in) {
-        this.path = in.readString();
-        this.realPath = in.readString();
-        this.uriPath = in.readString();
-    }
-
-    public static final Parcelable.Creator<MediaBean> CREATOR = new Parcelable.Creator<MediaBean>() {
-        @Override
-        public MediaBean createFromParcel(Parcel source) {
-            return new MediaBean(source);
-        }
-
-        @Override
-        public MediaBean[] newArray(int size) {
-            return new MediaBean[size];
-        }
-    };
 }

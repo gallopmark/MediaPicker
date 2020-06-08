@@ -29,39 +29,38 @@ import java.util.List;
 /*图片预览页面*/
 public class MediaPreviewActivity extends MediaBaseActivity implements MediaPreviewView {
     private FrameLayout mContainer;
-    private Toolbar toolBar;
-//    private TextView mTitleTv;
+    private Toolbar mToolbar;
     private FrameLayout mConfirmLayout;
-    private TextView mConfirmTv;
+    private TextView mConfirmWidget;
     private ViewPager mViewPager;
-    private LinearLayout llBottom;
+    private LinearLayout mBottomWidget;
     private TextView mSelectTextView;
 
-    private boolean isShowBar = true;
+    private boolean mShowBar = true;
 
     //tempImages和tempSelectImages用于图片列表数据的页面传输。
     //之所以不要Intent传输这两个图片列表，因为要保证两位页面操作的是同一个列表数据，同时可以避免数据量大时，
     // 用Intent传输发生的错误问题。
-    private static List<MediaBean> tempImages;
-    private static List<MediaBean> tempSelectImages;
+    private static List<MediaBean> tempMediaItems;
+    private static List<MediaBean> tempSelectItems;
 
-    private List<MediaBean> mImages = new ArrayList<>();
-    private List<MediaBean> mSelectImages = new ArrayList<>();
+    private List<MediaBean> mMediaItemList = new ArrayList<>();
+    private List<MediaBean> mSelectMediaItems = new ArrayList<>();
 
     private int mChooseMode = MediaConfig.MODE_IMAGE;
-    private boolean isSingle;
+    private boolean mSingleChoice;
     private int mMaxCount;
 
     private Drawable mSelectDrawable, mUnSelectDrawable;
 
     private MediaPreviewPresenter mPresenter;
-    private boolean isConfirm = false;
+    private boolean mConfirmed = false;
 
     public static void openActivity(Activity activity, int mode, List<MediaBean> images,
                                     List<MediaBean> selectImages, boolean isSingle,
                                     int maxSelectCount, int position) {
-        tempImages = images;
-        tempSelectImages = selectImages;
+        tempMediaItems = images;
+        tempSelectItems = selectImages;
         Intent intent = new Intent(activity, MediaPreviewActivity.class);
         intent.putExtras(dataPackages(mode, images, selectImages, isSingle, maxSelectCount, position));
         activity.startActivityForResult(intent, MediaPicker.PREVIEW_RESULT_CODE);
@@ -69,8 +68,8 @@ public class MediaPreviewActivity extends MediaBaseActivity implements MediaPrev
 
     private static Bundle dataPackages(int mode, List<MediaBean> images, List<MediaBean> selectImages, boolean isSingle,
                                        int maxSelectCount, int position) {
-        tempImages = images;
-        tempSelectImages = selectImages;
+        tempMediaItems = images;
+        tempSelectItems = selectImages;
         Bundle bundle = new Bundle();
         bundle.putInt(MediaPicker.CHOOSE_MODE, mode);
         bundle.putInt(MediaPicker.MAX_SELECT_COUNT, maxSelectCount);
@@ -96,27 +95,26 @@ public class MediaPreviewActivity extends MediaBaseActivity implements MediaPrev
         if (bundle != null) {
             mChooseMode = bundle.getInt(MediaPicker.CHOOSE_MODE, MediaConfig.MODE_IMAGE);
             mMaxCount = bundle.getInt(MediaPicker.MAX_SELECT_COUNT, 0);
-            isSingle = bundle.getBoolean(MediaPicker.IS_SINGLE, false);
+            mSingleChoice = bundle.getBoolean(MediaPicker.IS_SINGLE, false);
         }
-        if (tempImages != null) {
-            mImages.addAll(tempImages);
-            tempImages = null;
+        if (tempMediaItems != null) {
+            mMediaItemList.addAll(tempMediaItems);
+            tempMediaItems = null;
         }
-        if (tempSelectImages != null) {
-            mSelectImages.addAll(tempSelectImages);
-            tempSelectImages = null;
+        if (tempSelectItems != null) {
+            mSelectMediaItems.addAll(tempSelectItems);
+            tempSelectItems = null;
         }
     }
 
     @Override
     public void onInitView() {
         mContainer = findViewById(R.id.mContainer);
-        toolBar = findViewById(R.id.toolBar);
-//        mTitleTv = findViewById(R.id.mTitleTv);
+        mToolbar = findViewById(R.id.toolBar);
         mConfirmLayout = findViewById(R.id.mConfirmLayout);
-        mConfirmTv = findViewById(R.id.mConfirmTv);
+        mConfirmWidget = findViewById(R.id.mConfirmTv);
         mViewPager = findViewById(R.id.mViewPager);
-        llBottom = findViewById(R.id.llBottom);
+        mBottomWidget = findViewById(R.id.llBottom);
         mSelectTextView = findViewById(R.id.mSelectTextView);
         mSelectDrawable = ContextCompat.getDrawable(this, R.drawable.mediaselector_icon_selected);
         mUnSelectDrawable = ContextCompat.getDrawable(this, R.drawable.mediaselector_icon_unselect);
@@ -124,13 +122,12 @@ public class MediaPreviewActivity extends MediaBaseActivity implements MediaPrev
 
     @Override
     public void initViewData() {
-        setTitle("1/" + mImages.size());
-        setConfirm(mSelectImages.size());
+        setTitle("1/" + mMediaItemList.size());
+        setConfirm(mSelectMediaItems.size());
     }
 
     private void setTitle(String title) {
-        toolBar.setTitle(title);
-//        mTitleTv.setText(title);
+        mToolbar.setTitle(title);
     }
 
     private void setConfirm(int count) {
@@ -141,7 +138,7 @@ public class MediaPreviewActivity extends MediaBaseActivity implements MediaPrev
             mConfirmLayout.setEnabled(true);
             textConfirm = textConfirm + "(" + count + ")";
         }
-        mConfirmTv.setText(textConfirm);
+        mConfirmWidget.setText(textConfirm);
     }
 
     @Override
@@ -150,21 +147,21 @@ public class MediaPreviewActivity extends MediaBaseActivity implements MediaPrev
         mViewPager.clearOnPageChangeListeners();
         mViewPager.setOffscreenPageLimit(1);
         int initPosition = getIntent().getIntExtra(MediaPicker.POSITION, 0);
-        final MediaBasePagerAdapter pagerAdapter;
+        final MediaBasePagerAdapter<?> pagerAdapter;
         if (mChooseMode == MediaConfig.MODE_VIDEO) {
-            pagerAdapter = new VideoPagerAdapter(this, mImages, mViewPager, initPosition);
+            pagerAdapter = new VideoPagerAdapter(this, mMediaItemList, mViewPager, initPosition);
         } else {
-            pagerAdapter = new ImagePagerAdapter(this, mImages);
+            pagerAdapter = new ImagePagerAdapter(this, mMediaItemList);
         }
         pagerAdapter.setOnPagerItemClickListener(new OnPagerItemClickListener() {
             @Override
             public void onItemClick(int position) {
-                if (isShowBar) {
-                    mPresenter.hideBar(mContainer, toolBar, llBottom);
-                    isShowBar = false;
+                if (mShowBar) {
+                    mPresenter.hideBar(mContainer, mToolbar, mBottomWidget);
+                    mShowBar = false;
                 } else {
-                    mPresenter.showBar(mContainer, toolBar, llBottom);
-                    isShowBar = true;
+                    mPresenter.showBar(mContainer, mToolbar, mBottomWidget);
+                    mShowBar = true;
                 }
             }
         });
@@ -177,7 +174,7 @@ public class MediaPreviewActivity extends MediaBaseActivity implements MediaPrev
 
             @Override
             public void onPageSelected(int position) {
-                setTitle((position + 1) + "/" + mImages.size());
+                setTitle((position + 1) + "/" + mMediaItemList.size());
                 setCheckStatus(position);
             }
 
@@ -192,7 +189,7 @@ public class MediaPreviewActivity extends MediaBaseActivity implements MediaPrev
 
     @Override
     public void onInitListener() {
-        toolBar.setNavigationOnClickListener(new View.OnClickListener() {
+        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 finish();
@@ -201,49 +198,53 @@ public class MediaPreviewActivity extends MediaBaseActivity implements MediaPrev
         mConfirmLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                isConfirm = true;
+                mConfirmed = true;
                 finish();
             }
         });
         mSelectTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int currentItem = mViewPager.getCurrentItem();
-                if (currentItem < 0 || currentItem > mImages.size()) return;
-                MediaBean mediaBean = mImages.get(currentItem);
-                if (mSelectImages.contains(mediaBean)) {
-                    if (isSingle) {
-                        mSelectImages.clear();
-                    } else {
-                        mSelectImages.remove(mediaBean);
-                    }
-                    setUnCheckItem();
-                } else {
-                    /*单选情况下 清空已选图片再添加选中图片*/
-                    if (isSingle) {
-                        mSelectImages.clear();
-                        mSelectImages.add(mediaBean);
-                        setCheckItem();
-                    } else {
-                        /*未指定maxCount 或者选择的数量没有超过maxCount*/
-                        if (mMaxCount == 0 || mSelectImages.size() < mMaxCount) {
-                            mSelectImages.add(mediaBean);
-                            setCheckItem();
+                if (!mMediaItemList.isEmpty()) {
+                    int currentPos = mViewPager.getCurrentItem();
+                    if (currentPos >= 0 && currentPos < mMediaItemList.size()) {
+                        MediaBean mediaBean = mMediaItemList.get(currentPos);
+                        if (mSelectMediaItems.contains(mediaBean)) {
+                            if (mSingleChoice) {
+                                mSelectMediaItems.clear();
+                            } else {
+                                mSelectMediaItems.remove(mediaBean);
+                            }
+                            setUnCheckItem();
+                        } else {
+                            /*单选情况下 清空已选图片再添加选中图片*/
+                            if (mSingleChoice) {
+                                mSelectMediaItems.clear();
+                                mSelectMediaItems.add(mediaBean);
+                                setCheckItem();
+                            } else {
+                                /*未指定maxCount 或者选择的数量没有超过maxCount*/
+                                if (mMaxCount == 0 || mSelectMediaItems.size() < mMaxCount) {
+                                    mSelectMediaItems.add(mediaBean);
+                                    setCheckItem();
+                                }
+                            }
                         }
+                        setConfirm(mSelectMediaItems.size());
                     }
                 }
-                setConfirm(mSelectImages.size());
             }
         });
     }
 
     private void setCheckStatus(int position) {
-        if (position < 0 || position > mImages.size()) return;
-        int index = mSelectImages.indexOf(mImages.get(position));
-        if (index >= 0 && index < mSelectImages.size()) {
-            setCheckItem();
-        } else {
-            setUnCheckItem();
+        if (!mMediaItemList.isEmpty() && position >= 0 && position < mMediaItemList.size()) {
+            int index = mSelectMediaItems.indexOf(mMediaItemList.get(position));
+            if (index != -1) {
+                setCheckItem();
+            } else {
+                setUnCheckItem();
+            }
         }
     }
 
@@ -258,7 +259,7 @@ public class MediaPreviewActivity extends MediaBaseActivity implements MediaPrev
     @Override
     protected void onResume() {
         super.onResume();
-        if(mViewPager.getAdapter() instanceof VideoPagerAdapter){
+        if (mViewPager.getAdapter() instanceof VideoPagerAdapter) {
             VideoPagerAdapter adapter = (VideoPagerAdapter) mViewPager.getAdapter();
             adapter.resume();
         }
@@ -267,7 +268,7 @@ public class MediaPreviewActivity extends MediaBaseActivity implements MediaPrev
     @Override
     protected void onPause() {
         super.onPause();
-        if(mViewPager.getAdapter() instanceof VideoPagerAdapter){
+        if (mViewPager.getAdapter() instanceof VideoPagerAdapter) {
             VideoPagerAdapter adapter = (VideoPagerAdapter) mViewPager.getAdapter();
             adapter.pause();
         }
@@ -275,7 +276,7 @@ public class MediaPreviewActivity extends MediaBaseActivity implements MediaPrev
 
     @Override
     protected void onDestroy() {
-        if(mViewPager.getAdapter() instanceof VideoPagerAdapter){
+        if (mViewPager.getAdapter() instanceof VideoPagerAdapter) {
             VideoPagerAdapter adapter = (VideoPagerAdapter) mViewPager.getAdapter();
             adapter.destroy();
         }
@@ -284,7 +285,7 @@ public class MediaPreviewActivity extends MediaBaseActivity implements MediaPrev
 
     @Override
     public void finish() {
-        MediaPickerActivity.onPreviewResult(this, mSelectImages, isConfirm);
+        MediaPickerActivity.onPreviewResult(this, mSelectMediaItems, mConfirmed);
         super.finish();
     }
 }

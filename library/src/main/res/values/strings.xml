@@ -21,4 +21,9 @@
     <string name="imagePicker_dialog_cancel">取消</string>
 
     <string name="imagePicker_play_video_error">无法播放此视频</string>
+
+    <string name="mediapicker_camera_image">拍摄图片</string>
+    <string name="mediapicker_camera_video">录制视频</string>
+
+    <string name="mediapicker_create_file_error">内存不足或不可用！</string>
 </resources>

@@ -9,6 +9,18 @@ import androidx.appcompat.app.AlertDialog;
 import pony.xcode.media.R;
 
 public class DialogUtils {
+    public static void showDialog(Context context, String message) {
+        new AlertDialog.Builder(context)
+                .setTitle(R.string.imagePicker_dialog_title)
+                .setMessage(message)
+                .setPositiveButton(R.string.imagePicker_dialog_confirm, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                }).show();
+    }
+
     //相机不可用弹窗提示
     public static void showUnusableCamera(Context context) {
         new AlertDialog.Builder(context)
@@ -25,10 +37,10 @@ public class DialogUtils {
     //不允许或禁止访问存储权限弹窗提示
 
     /**
-     * @param activity          当前activity
-     * @param message           提示信息
-     * @param listener          再次申请权限回调
-     * @param finishWhenCancel  点击取消是否退出页面
+     * @param activity         当前activity
+     * @param message          提示信息
+     * @param listener         再次申请权限回调
+     * @param finishWhenCancel 点击取消是否退出页面
      */
     public static void showDismissPermission(final Activity activity, String message, final DialogInterface.OnClickListener listener, final boolean finishWhenCancel) {
         new AlertDialog.Builder(activity)
@@ -62,7 +74,7 @@ public class DialogUtils {
         }).show();
     }
 
-    public static void unablePlayVideo(Context context){
+    public static void unablePlayVideo(Context context) {
         new AlertDialog.Builder(context)
                 .setTitle(R.string.imagePicker_dialog_title)
                 .setMessage(R.string.imagePicker_play_video_error)

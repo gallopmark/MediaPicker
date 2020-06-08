@@ -30,31 +30,31 @@ import java.util.List;
 /*图片选择页面*/
 public class MediaPickerActivity extends MediaBaseActivity implements View.OnClickListener, MediaPickerView {
 
-    private Toolbar toolBar;
+    private Toolbar mToolbar;
     private FrameLayout mConfirmLayout;
-    private TextView mConfirmTv;
-    private RecyclerView mImageRv;
+    private TextView mConfirmWidget;
+    private RecyclerView mMediaRView;
     private TextView mTimeTextView;
     private FrameLayout mFolderLayout;
-    private RecyclerView mFolderRv;
+    private RecyclerView mFolderRView;
     private FrameLayout mFolderNameLayout;
-    private TextView mFolderNameTv;
+    private TextView mFolderNameTView;
     private FrameLayout mPreviewLayout;
-    private TextView mPreviewTv;
+    private TextView mPreviewTView;
 
-    private boolean isSingle;
+    private boolean mSingleChoice;
     private boolean isViewImage = true;
     private int mMaxCount;
 
-    private boolean isUseCamera = true;
+    private boolean mUseCamera = true;
 
     //用于接收从外面传进来的已选择的图片列表。当用户原来已经有选择过图片，现在重新打开选择器，允许用
     // 户把先前选过的图片传进来，并把这些图片默认为选中状态。
-    private static List<String> mTempSelectImages;
-    private List<MediaBean> mSelectedImages;
+    private static List<MediaBean> mTempSelectItems;
+    private List<MediaBean> mSelectedItems;
 
-    private MediaFolder mFolder;
-    private List<MediaFolder> mFolders;
+    private MediaFolder mMediaFolder;
+    private List<MediaFolder> mFolderList;
 
     private MediaGridAdapter mGridAdapter;
 
@@ -62,7 +62,7 @@ public class MediaPickerActivity extends MediaBaseActivity implements View.OnCli
 
     /*用于接收图片预览页面已选图片集合，不用intent传值（避免数据过大发生错误），在onActivityResult回调时刷新当前
     已选图片数据，在activity结束时赋值为null，避免造成内存泄漏*/
-    private static List<MediaBean> tempSelectImages;
+    private static List<MediaBean> tempSelectItems;
 
     private int mChooseMode = MediaConfig.MODE_IMAGE;
 
@@ -80,7 +80,7 @@ public class MediaPickerActivity extends MediaBaseActivity implements View.OnCli
      */
     public static void openActivity(Activity activity, int requestCode,
                                     boolean isSingle, boolean isViewImage, boolean useCamera,
-                                    int maxSelectCount, ArrayList<String> selected,
+                                    int maxSelectCount, ArrayList<MediaBean> selected,
                                     int durationLimit, int videoQuality,
                                     long sizeLimit, int mode) {
         Intent intent = new Intent(activity, MediaPickerActivity.class);
@@ -106,7 +106,7 @@ public class MediaPickerActivity extends MediaBaseActivity implements View.OnCli
      */
     public static void openActivity(Fragment fragment, int requestCode,
                                     boolean isSingle, boolean isViewImage, boolean useCamera,
-                                    int maxSelectCount, ArrayList<String> selected,
+                                    int maxSelectCount, ArrayList<MediaBean> selected,
                                     int durationLimit, int videoQuality,
                                     long sizeLimit, int mode) {
         if (fragment.getContext() == null) return;
@@ -121,7 +121,7 @@ public class MediaPickerActivity extends MediaBaseActivity implements View.OnCli
 
     public static void openActivity(android.app.Fragment fragment, int requestCode,
                                     boolean isSingle, boolean isViewImage, boolean useCamera,
-                                    int maxSelectCount, ArrayList<String> selected,
+                                    int maxSelectCount, ArrayList<MediaBean> selected,
                                     int durationLimit, int videoQuality,
                                     long sizeLimit, int mode) {
         if (fragment.getActivity() == null) return;
@@ -136,7 +136,7 @@ public class MediaPickerActivity extends MediaBaseActivity implements View.OnCli
 
     private static Bundle dataPackages(boolean isSingle, boolean isViewImage,
                                        boolean useCamera, int maxSelectCount,
-                                       ArrayList<String> selected, int durationLimit,
+                                       ArrayList<MediaBean> selected, int durationLimit,
                                        int videoQuality, long sizeLimit,
                                        int mode) {
         Bundle bundle = new Bundle();
@@ -148,12 +148,12 @@ public class MediaPickerActivity extends MediaBaseActivity implements View.OnCli
         bundle.putInt(MediaPicker.DURATION_LIMIT, durationLimit);
         bundle.putInt(MediaPicker.VIDEO_QUALITY, videoQuality);
         bundle.putLong(MediaPicker.SIZE_LIMIT, sizeLimit);
-        mTempSelectImages = selected;
+        mTempSelectItems = selected;
         return bundle;
     }
 
     public static void onPreviewResult(Activity activity, List<MediaBean> selectItems, boolean isConfirm) {
-        tempSelectImages = selectItems;
+        tempSelectItems = selectItems;
         Intent intent = new Intent();
         intent.putExtra(MediaPicker.IS_CONFIRM, isConfirm);
         activity.setResult(MediaPicker.PREVIEW_RESULT_CODE, intent);
@@ -177,51 +177,45 @@ public class MediaPickerActivity extends MediaBaseActivity implements View.OnCli
         if (bundle != null) {
             mChooseMode = bundle.getInt(MediaPicker.CHOOSE_MODE, MediaConfig.MODE_IMAGE);
             mMaxCount = bundle.getInt(MediaPicker.MAX_SELECT_COUNT, 0);
-            isSingle = bundle.getBoolean(MediaPicker.IS_SINGLE, false);
+            mSingleChoice = bundle.getBoolean(MediaPicker.IS_SINGLE, false);
             isViewImage = bundle.getBoolean(MediaPicker.IS_VIEW_IMAGE, true);
-            isUseCamera = bundle.getBoolean(MediaPicker.USE_CAMERA, true);
-            if (mTempSelectImages != null) {
-                this.mSelectedImages = new ArrayList<>();
-                for (String path : mTempSelectImages) {
-                    this.mSelectedImages.add(new MediaBean(path, path));
-                }
-                mTempSelectImages.clear();
-                mTempSelectImages = null;
+            mUseCamera = bundle.getBoolean(MediaPicker.USE_CAMERA, true);
+            if (mTempSelectItems != null) {
+                this.mSelectedItems = new ArrayList<>(mTempSelectItems);
+                mTempSelectItems.clear();
+                mTempSelectItems = null;
             }
         }
     }
 
     @Override
     public void onInitView() {
-        toolBar = findViewById(R.id.toolBar);
-//        TextView titleTextView = findViewById(R.id.mTitleTv);
+        mToolbar = findViewById(R.id.toolBar);
         if (mChooseMode == MediaConfig.MODE_VIDEO) {
-            toolBar.setTitle(getString(R.string.imagePicker_video_title));
-//            titleTextView.setText(getString(R.string.imagePicker_video_title));
+            mToolbar.setTitle(getString(R.string.imagePicker_video_title));
         } else {
-            toolBar.setTitle(getString(R.string.imagePicker_image_title));
-//            titleTextView.setText(getString(R.string.imagePicker_image_title));
+            mToolbar.setTitle(getString(R.string.imagePicker_image_title));
         }
         mConfirmLayout = findViewById(R.id.mConfirmLayout);
-        mConfirmTv = findViewById(R.id.mConfirmTv);
-        mImageRv = findViewById(R.id.mImageRv);
+        mConfirmWidget = findViewById(R.id.mConfirmTv);
+        mMediaRView = findViewById(R.id.mImageRv);
         mTimeTextView = findViewById(R.id.mTimeTextView);
         mFolderLayout = findViewById(R.id.mFolderLayout);
-        mFolderRv = findViewById(R.id.mFolderRv);
+        mFolderRView = findViewById(R.id.mFolderRv);
         mFolderNameLayout = findViewById(R.id.mFolderNameLayout);
-        mFolderNameTv = findViewById(R.id.mFolderNameTv);
+        mFolderNameTView = findViewById(R.id.mFolderNameTv);
         mPreviewLayout = findViewById(R.id.mPreviewLayout);
-        mPreviewTv = findViewById(R.id.mPreviewTv);
+        mPreviewTView = findViewById(R.id.mPreviewTv);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 3);
-        mImageRv.setLayoutManager(gridLayoutManager);
+        mMediaRView.setLayoutManager(gridLayoutManager);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
-        mFolderRv.setLayoutManager(linearLayoutManager);
+        mFolderRView.setLayoutManager(linearLayoutManager);
     }
 
     @Override
     public void onInitListener() {
-        toolBar.setNavigationOnClickListener(new View.OnClickListener() {
+        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 finish();
@@ -231,7 +225,7 @@ public class MediaPickerActivity extends MediaBaseActivity implements View.OnCli
         mFolderLayout.setOnClickListener(this);
         mFolderNameLayout.setOnClickListener(this);
         mPreviewLayout.setOnClickListener(this);
-        mImageRv.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        mMediaRView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
@@ -248,12 +242,12 @@ public class MediaPickerActivity extends MediaBaseActivity implements View.OnCli
 
     @Override
     public void onInitImageList() {
-        mGridAdapter = new MediaGridAdapter(this, mMaxCount, isSingle, isViewImage, mChooseMode);
-        mImageRv.setAdapter(mGridAdapter);
+        mGridAdapter = new MediaGridAdapter(this, mMaxCount, mSingleChoice, isViewImage, mChooseMode);
+        mMediaRView.setAdapter(mGridAdapter);
         mGridAdapter.setOnItemSelectListener(new MediaGridAdapter.OnItemSelectListener() {
             @Override
-            public void onSelected(List<MediaBean> mSelectImages) {
-                setSelectImageCount(mSelectImages.size());
+            public void onSelected(List<MediaBean> selectImages) {
+                setSelectImageCount(selectImages.size());
             }
         });
         mGridAdapter.setOnItemClickListener(new MediaGridAdapter.OnItemClickListener() {
@@ -276,13 +270,13 @@ public class MediaPickerActivity extends MediaBaseActivity implements View.OnCli
 
     @Override
     public void onLoadFolders(ArrayList<MediaFolder> folders) {
-        this.mFolders = folders;
+        this.mFolderList = folders;
         initFolderList();
-        if (this.mFolders.isEmpty()) return;  /*空相册*/
-        mFolders.get(0).setUseCamera(isUseCamera);
-        setFolder(mFolders.get(0));
-        if (mSelectedImages != null && mGridAdapter != null) {
-            mGridAdapter.setSelectedImages(mSelectedImages);
+        if (this.mFolderList.isEmpty()) return;  /*空相册*/
+        mFolderList.get(0).setUseCamera(mUseCamera);
+        setFolder(mFolderList.get(0));
+        if (mSelectedItems != null && mGridAdapter != null) {
+            mGridAdapter.setSelectedImages(mSelectedItems);
             setSelectImageCount(mGridAdapter.getSelectedItems().size());
         }
     }
@@ -291,10 +285,10 @@ public class MediaPickerActivity extends MediaBaseActivity implements View.OnCli
      * 改变时间条显示的时间（显示图片列表中的第一个可见图片的时间）
      */
     private void changeTime() {
-        if (mImageRv.getLayoutManager() == null) return;
-        int firstVisibleItem = ((GridLayoutManager) mImageRv.getLayoutManager()).findFirstVisibleItemPosition();
-        MediaBean image = mGridAdapter.getFirstVisibleImage(firstVisibleItem);
-        mPresenter.changeTime(mTimeTextView, image);
+        if (mMediaRView.getLayoutManager() == null) return;
+        int firstVisibleItem = ((GridLayoutManager) mMediaRView.getLayoutManager()).findFirstVisibleItemPosition();
+        MediaBean mediaBean = mGridAdapter.getFirstVisibleImage(firstVisibleItem);
+        mPresenter.changeTime(mTimeTextView, mediaBean);
     }
 
     @Override
@@ -318,9 +312,9 @@ public class MediaPickerActivity extends MediaBaseActivity implements View.OnCli
     }
 
     private void initFolderList() {
-        MediaFolderAdapter mFolderAdapter = new MediaFolderAdapter(this, mFolders);
-        mFolderRv.setAdapter(mFolderAdapter);
-        mFolderAdapter.setOnFolderSelectListener(new MediaFolderAdapter.OnFolderSelectListener() {
+        MediaFolderAdapter folderAdapter = new MediaFolderAdapter(this, mFolderList);
+        mFolderRView.setAdapter(folderAdapter);
+        folderAdapter.setOnFolderSelectListener(new MediaFolderAdapter.OnFolderSelectListener() {
             @Override
             public void OnFolderSelect(MediaFolder folder) {
                 setFolder(folder);
@@ -332,11 +326,11 @@ public class MediaPickerActivity extends MediaBaseActivity implements View.OnCli
      * 设置选中的文件夹，同时刷新图片列表
      */
     private void setFolder(MediaFolder folder) {
-        if (folder != null && mGridAdapter != null && !folder.equals(mFolder)) {
-            mFolder = folder;
-            mFolderNameTv.setText(folder.getName());
-            mImageRv.scrollToPosition(0);
-            mGridAdapter.refresh(folder.getImages(), folder.isUseCamera());
+        if (folder != null && mGridAdapter != null && !folder.equals(mMediaFolder)) {
+            mMediaFolder = folder;
+            mFolderNameTView.setText(folder.getName());
+            mMediaRView.scrollToPosition(0);
+            mGridAdapter.refresh(folder.getItemList(), folder.isUseCamera());
             mPresenter.closeFolder(mFolderLayout, mFolderNameLayout);
         }
     }
@@ -351,10 +345,10 @@ public class MediaPickerActivity extends MediaBaseActivity implements View.OnCli
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == MediaPicker.PREVIEW_RESULT_CODE) {
-            if (tempSelectImages != null) {
-                mGridAdapter.setSelectedImages(tempSelectImages);
+            if (tempSelectItems != null) {
+                mGridAdapter.setSelectedImages(tempSelectItems);
                 setSelectImageCount(mGridAdapter.getSelectedItems().size());
-                tempSelectImages = null;
+                tempSelectItems = null;
             }
             if (data != null && data.getBooleanExtra(MediaPicker.IS_CONFIRM, false)) {
                 //如果用户在预览页点击了确定，就直接把用户选中的图片返回给用户。
@@ -369,14 +363,8 @@ public class MediaPickerActivity extends MediaBaseActivity implements View.OnCli
         if (mGridAdapter == null) {
             return;
         }
-        //因为图片的实体类是Image，而我们返回的是String数组，所以要进行转换。
-        ArrayList<MediaBean> selectImages = mGridAdapter.getSelectedItems();
-//        ArrayList<String> images = new ArrayList<>();
-//        for (MediaBean image : selectImages) {
-//            images.add(image.getPath());
-//        }
         //点击确定，把选中的图片通过Intent传给上一个Activity。
-        mPresenter.setResult(RESULT_OK, selectImages, false);
+        mPresenter.setResult(RESULT_OK, mGridAdapter.getSelectedItems(), false);
         finish();
     }
 
@@ -390,7 +378,7 @@ public class MediaPickerActivity extends MediaBaseActivity implements View.OnCli
             mConfirmLayout.setEnabled(true);
             mPreviewLayout.setEnabled(true);
             textPreview = textPreview + "(" + count + ")";
-            if (isSingle) {
+            if (mSingleChoice) {
                 textConfirm = getString(R.string.imagePicker_confirm);
             } else if (mMaxCount > 0) {
                 textConfirm = textConfirm + "(" + count + "/" + mMaxCount + ")";
@@ -398,13 +386,13 @@ public class MediaPickerActivity extends MediaBaseActivity implements View.OnCli
                 textConfirm = textConfirm + "(" + count + ")";
             }
         }
-        mConfirmTv.setText(textConfirm);
-        mPreviewTv.setText(textPreview);
+        mConfirmWidget.setText(textConfirm);
+        mPreviewTView.setText(textPreview);
     }
 
     private void toPreviewActivity(List<MediaBean> images, int position) {
         if (images != null && !images.isEmpty()) {
-            MediaPreviewActivity.openActivity(this, mChooseMode, images, mGridAdapter.getSelectedItems(), isSingle, mMaxCount, position);
+            MediaPreviewActivity.openActivity(this, mChooseMode, images, mGridAdapter.getSelectedItems(), mSingleChoice, mMaxCount, position);
         }
     }
 
@@ -425,10 +413,10 @@ public class MediaPickerActivity extends MediaBaseActivity implements View.OnCli
 
     @Override
     protected void onDestroy() {
-        if (tempSelectImages != null && !tempSelectImages.isEmpty()) {
-            tempSelectImages.clear();
+        if (tempSelectItems != null && !tempSelectItems.isEmpty()) {
+            tempSelectItems.clear();
         }
-        tempSelectImages = null;
+        tempSelectItems = null;
         mPresenter.destroy();
         super.onDestroy();
     }

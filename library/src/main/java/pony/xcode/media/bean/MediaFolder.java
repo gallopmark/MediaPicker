@@ -12,7 +12,7 @@ import java.util.ArrayList;
 public class MediaFolder {
     private boolean useCamera; // 是否可以调用相机拍照。只有“全部”文件夹才可以拍照
     private String name;
-    private ArrayList<MediaBean> images;
+    private ArrayList<MediaBean> itemList;
 
     public MediaFolder(String name) {
         this.name = name;
@@ -20,7 +20,7 @@ public class MediaFolder {
 
     public MediaFolder(String name, ArrayList<MediaBean> images) {
         this.name = name;
-        this.images = images;
+        this.itemList = images;
     }
 
     public String getName() {
@@ -31,8 +31,8 @@ public class MediaFolder {
         this.name = name;
     }
 
-    public ArrayList<MediaBean> getImages() {
-        return images;
+    public ArrayList<MediaBean> getItemList() {
+        return itemList;
     }
 
     public boolean isUseCamera() {
@@ -45,10 +45,10 @@ public class MediaFolder {
 
     public void addImage(MediaBean image) {
         if (image != null && StringUtils.isNotEmptyString(image.getPath())) {
-            if (images == null) {
-                images = new ArrayList<>();
+            if (itemList == null) {
+                itemList = new ArrayList<>();
             }
-            images.add(image);
+            itemList.add(image);
         }
     }
 
@@ -57,7 +57,7 @@ public class MediaFolder {
     public String toString() {
         return "Folder{" +
                 "name='" + name + '\'' +
-                ", images=" + images +
+                ", images=" + itemList +
                 '}';
     }
 }

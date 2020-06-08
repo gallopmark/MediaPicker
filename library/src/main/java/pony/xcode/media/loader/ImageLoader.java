@@ -1,19 +1,21 @@
 package pony.xcode.media.loader;
 
 import android.content.Context;
+
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import android.widget.ImageView;
 
+import pony.xcode.media.bean.MediaBean;
 
-public interface ImageLoader{
+
+public interface ImageLoader {
     /*加载图片文件夹列表第一张图
     *   Glide.with(mContext).load(new File(path)
                     .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.NONE))
                     .into(holder.ivImage);
     * */
-    void displayFolder(@NonNull Context context, @Nullable String path, @NonNull ImageView target);
+    void displayFolder(@NonNull Context context, @NonNull MediaBean bean, @NonNull ImageView target);
 
     /**
      * 加载相册图片
@@ -21,13 +23,13 @@ public interface ImageLoader{
      * .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.NONE))
      * .into(holder.mImageView);
      */
-    void displayGrid(@NonNull Context context, @Nullable String path, @NonNull ImageView target);
+    void displayGrid(@NonNull Context context, @NonNull MediaBean bean, @NonNull ImageView target);
 
     /**
      * 加载大图方法
      * Glide.with(context).asBitmap().load(images.get(position).getPath())
      * .into(new ImageViewTarget<Bitmap>(holder.photoView) {
-     *
+     * <p>
      * protected void setResource(@Nullable Bitmap resource) {
      * if (resource == null) return;
      * int width = resource.getWidth();
@@ -59,5 +61,5 @@ public interface ImageLoader{
      * }
      */
 
-    void displayPager(@NonNull Context context, @Nullable String path, @NonNull ImageView target);
+    void displayPager(@NonNull Context context, @NonNull MediaBean bean, @NonNull ImageView target);
 }

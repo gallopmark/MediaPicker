@@ -8,6 +8,7 @@ import android.provider.Settings;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import pony.xcode.media.bean.MediaBean;
 import pony.xcode.media.loader.DefaultImageLoader;
 import pony.xcode.media.loader.ImageLoader;
 
@@ -60,7 +61,7 @@ public class MediaPicker {
     private boolean isSingle = false;
     private boolean isClickPreview = true;
     private int mMaxSelectCount;
-    private ArrayList<String> mSelected;
+    private ArrayList<MediaBean> mSelected;
     private static final int MODE_IMAGE = 1; //图片模式
     private static final int MODE_VIDEO = 2;  //视频模式
     private int mChooseMode = MODE_IMAGE;
@@ -129,7 +130,7 @@ public class MediaPicker {
         boolean isSingle = false;
         boolean isClickPreview = true;
         int mMaxSelectCount;
-        ArrayList<String> selected;
+        ArrayList<MediaBean> selected;
         ImageLoader mImageLoader;
     }
 
@@ -183,7 +184,7 @@ public class MediaPicker {
          * 接收从外面传进来的已选择的图片列表。当用户原来已经有选择过图片，现在重新打开
          * 选择器，允许用户把先前选过的图片传进来，并把这些图片默认为选中状态。
          */
-        public ImagePickerBuilder selected(ArrayList<String> selected) {
+        public ImagePickerBuilder selected(ArrayList<MediaBean> selected) {
             this.selected = selected;
             return this;
         }
@@ -291,7 +292,7 @@ public class MediaPicker {
          * 接收从外面传进来的已选择的图片列表。当用户原来已经有选择过图片，现在重新打开
          * 选择器，允许用户把先前选过的图片传进来，并把这些图片默认为选中状态。
          */
-        public VideoPickerBuilder selected(ArrayList<String> selected) {
+        public VideoPickerBuilder selected(ArrayList<MediaBean> selected) {
             this.selected = selected;
             return this;
         }

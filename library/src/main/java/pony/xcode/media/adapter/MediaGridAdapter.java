@@ -78,6 +78,12 @@ public class MediaGridAdapter extends RecyclerView.Adapter<BaseViewHolder> {
     public void onBindViewHolder(@NonNull BaseViewHolder viewHolder, int position) {
         int itemType = viewHolder.getItemViewType();
         if (itemType == TYPE_CAMERA) {
+            CameraViewHolder cameraHolder = (CameraViewHolder) viewHolder;
+            if (mChooseMode == MediaConfig.MODE_VIDEO) {
+                cameraHolder.titleTextView.setText(mContext.getString(R.string.mediapicker_camera_video));
+            } else {
+                cameraHolder.titleTextView.setText(mContext.getString(R.string.mediapicker_camera_image));
+            }
             viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -89,7 +95,7 @@ public class MediaGridAdapter extends RecyclerView.Adapter<BaseViewHolder> {
         } else {
             final MediaBean mediaBean = getImageItem(position);
             final ImageViewHolder holder = (ImageViewHolder) viewHolder;
-            MediaPicker.getDisplacer().displayGrid(mContext, mediaBean.getPath(), holder.mImageView);
+            MediaPicker.getDisplacer().displayGrid(mContext, mediaBean, holder.mImageView);
             if (mChooseMode == MediaConfig.MODE_VIDEO) {
                 holder.durationTextView.setText(mediaBean.getFormatDurationTime());
                 holder.durationTextView.setVisibility(View.VISIBLE);
@@ -246,14 +252,16 @@ public class MediaGridAdapter extends RecyclerView.Adapter<BaseViewHolder> {
     }
 
     private static class CameraViewHolder extends BaseViewHolder {
+        TextView titleTextView;
 
         CameraViewHolder(@NonNull View itemView) {
             super(itemView);
+            titleTextView = itemView.findViewById(R.id.tv_camera);
         }
     }
 
     public interface OnItemSelectListener {
-        void onSelected(List<MediaBean> mSelectImages);
+        void onSelected(List<MediaBean> selectImages);
     }
 
     public void setOnItemSelectListener(OnItemSelectListener onItemSelectListener) {

@@ -41,12 +41,12 @@ public class MediaFolderAdapter extends RecyclerView.Adapter<MediaFolderAdapter.
     @Override
     public void onBindViewHolder(@NonNull final MyViewHolder holder, int position) {
         final MediaFolder folder = mFolders.get(position);
-        ArrayList<MediaBean> images = folder.getImages();
+        ArrayList<MediaBean> images = folder.getItemList();
         holder.tvName.setText(folder.getName());
         holder.ivSelect.setVisibility(mSelectItem == position ? View.VISIBLE : View.GONE);
         String text = images != null && !images.isEmpty() ? images.size() + "张" : "0张";
         if (images != null && !images.isEmpty()) {
-            MediaPicker.getDisplacer().displayFolder(mContext, images.get(0).getPath(), holder.ivImage);
+            MediaPicker.getDisplacer().displayFolder(mContext, images.get(0), holder.ivImage);
         } else {
             holder.ivImage.setImageResource(0);
         }

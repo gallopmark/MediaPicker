@@ -10,14 +10,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
-import android.provider.MediaStore;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
@@ -27,28 +22,27 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import pony.xcode.media.CaptureMachine;
 import pony.xcode.media.MediaConfig;
 import pony.xcode.media.R;
+import pony.xcode.media.VideoConfig;
 import pony.xcode.media.bean.MediaFolder;
 import pony.xcode.media.bean.MediaBean;
 import pony.xcode.media.dialog.PictureLoadingDialog;
-import pony.xcode.media.model.LocalMediaSource;
-import pony.xcode.media.utils.AndroidQTransformUtils;
+import pony.xcode.media.model.LocalMediaMode;
 import pony.xcode.media.utils.DateUtils;
 import pony.xcode.media.MediaPicker;
 import pony.xcode.media.utils.DialogUtils;
 import pony.xcode.media.utils.MediaUtil;
-import pony.xcode.media.utils.SDKVersionUtils;
 import pony.xcode.media.view.MediaPickerView;
 
-import java.io.File;
 import java.util.ArrayList;
 
-public class MediaPickerPresenter implements Handler.Callback {
+public class MediaPickerPresenter {
 
     private Activity activity;
     private MediaPickerView pickerView;
-    private LocalMediaSource mLocalMediaSource;
+    private LocalMediaMode mLocalMediaMode;
 
     private static final int PERMISSION_WRITE_EXTERNAL_REQUEST_CODE = 0x00000011;
     private static final int PERMISSION_CAMERA_REQUEST_CODE = 0x00000012;
@@ -62,20 +56,17 @@ public class MediaPickerPresenter implements Handler.Callback {
     private boolean isShowTime;
 
     private int mChooseMode;
-    private String mPhotoPath, mPhotoMimeType;  //拍照后的路径
-    private String mVideoPath, mVideoMimeType; //录制视频后的路径
+    private CaptureMachine mCaptureMachine; //拍照或录像
 
-    private Handler mCaptureResultHandler;
     private PictureLoadingDialog mLoadingDialog;
-    private static final int CAPTURE_MSG_CODE = 10;
 
     private HideRunnable mHide;
 
     private class HideRunnable implements Runnable {
         private TextView mTimeTextView;
 
-        HideRunnable(TextView mTimeTextView) {
-            this.mTimeTextView = mTimeTextView;
+        HideRunnable(TextView timeTextView) {
+            this.mTimeTextView = timeTextView;
         }
 
         @Override
@@ -87,7 +78,7 @@ public class MediaPickerPresenter implements Handler.Callback {
     public MediaPickerPresenter(Activity activity, @NonNull MediaPickerView pickerView) {
         this.activity = activity;
         this.pickerView = pickerView;
-        mLocalMediaSource = new LocalMediaSource();
+        mLocalMediaMode = new LocalMediaMode();
     }
 
     public void initView() {
@@ -115,7 +106,7 @@ public class MediaPickerPresenter implements Handler.Callback {
     }
 
     private void loadImageFromSDCard() {
-        mLocalMediaSource.loadImageForSDCard(activity, mChooseMode, new LocalMediaSource.OnCompleteListener() {
+        mLocalMediaMode.loadMediaForSDCard(activity, mChooseMode, new LocalMediaMode.OnCompleteListener() {
             @Override
             public void onPreLoad() {
                 showLoading();
@@ -150,9 +141,9 @@ public class MediaPickerPresenter implements Handler.Callback {
         ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_WRITE_EXTERNAL_REQUEST_CODE);
     }
 
-    public void changeTime(TextView tvDatetime, MediaBean image) {
-        if (image != null) {
-            String time = DateUtils.getImageTime(activity, image.getTime() * 1000);
+    public void changeTime(TextView tvDatetime, MediaBean mediaBean) {
+        if (mediaBean != null) {
+            String time = DateUtils.getImageTime(activity, mediaBean.getTime() * 1000);
             tvDatetime.setText(time);
             showTime(tvDatetime);
             if (mHide == null) {
@@ -323,85 +314,25 @@ public class MediaPickerPresenter implements Handler.Callback {
 
     /*调起相机拍照*/
     private void startImageCapture() {
-        Intent captureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (captureIntent.resolveActivity(activity.getPackageManager()) != null) {
-            Uri imageUri = null;
-            if (SDKVersionUtils.isAndroidQAbove()) { //适配android Q
-                imageUri = MediaUtil.createImageUri(activity.getApplicationContext());
-                if (imageUri != null) {
-                    mPhotoPath = imageUri.toString();
-                    mPhotoMimeType = AndroidQTransformUtils.getMimeType(activity, imageUri);
-                } else {
-                    mPhotoPath = null;
-                }
-            } else {
-                try {
-                    File photoFile = MediaUtil.createImageFile(activity.getApplicationContext());
-                    if (photoFile != null) {
-                        //通过FileProvider创建一个content类型的Uri
-                        imageUri = MediaUtil.getProviderUri(activity, photoFile);
-                        mPhotoPath = photoFile.getAbsolutePath();
-                    }
-                } catch (Exception e) {
-                    mPhotoPath = null;
-                }
-            }
-            if (imageUri == null) {
-                DialogUtils.showUnusableCamera(activity);
-            } else {
-                captureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-                captureIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                activity.startActivityForResult(captureIntent, IMAGE_CAPTURE_CODE);
-            }
-        } else {
-            DialogUtils.showUnusableCamera(activity);
+        if (mCaptureMachine == null) {
+            mCaptureMachine = CaptureMachine.from(activity);
         }
+        mCaptureMachine.startImageCapture(IMAGE_CAPTURE_CODE);
     }
 
     //录制视频
     private void startVideoCapture() {
-        Intent captureIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
-        if (captureIntent.resolveActivity(activity.getPackageManager()) != null) {
-            Uri videoUri = null;
-            if (SDKVersionUtils.isAndroidQAbove()) {
-                videoUri = MediaUtil.createVideoUri(activity.getApplicationContext());
-                if (videoUri != null) {
-                    mVideoPath = videoUri.toString();
-                    mVideoMimeType = AndroidQTransformUtils.getMimeType(activity, videoUri);
-                } else {
-                    mVideoPath = null;
-                }
-            } else {
-                try {
-                    File photoFile = MediaUtil.createVideoFile(activity);
-                    if (photoFile != null) {
-                        //通过FileProvider创建一个content类型的Uri
-                        videoUri = MediaUtil.getProviderUri(activity, photoFile);
-                        mVideoPath = photoFile.getAbsolutePath();
-                    }
-                } catch (Exception e) {
-                    mVideoPath = null;
-                }
-            }
-            if (videoUri != null) {
-                Bundle extras = activity.getIntent().getExtras();
-                if (extras != null) {
-                    int durationLimit = extras.getInt(MediaPicker.DURATION_LIMIT, 0);
-                    if (durationLimit > 0) {
-                        captureIntent.putExtra(MediaStore.EXTRA_DURATION_LIMIT, durationLimit);
-                    }
-                    captureIntent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, extras.getInt(MediaPicker.VIDEO_QUALITY,
-                            MediaConfig.DEFAULT_VIDEO_QUALITY));
-                    long sizeLimit = extras.getLong(MediaPicker.SIZE_LIMIT, 0);
-                    if (sizeLimit > 0) {  //限制了录制大小 则限制的录制时间将不起作用
-                        captureIntent.putExtra(MediaStore.EXTRA_SIZE_LIMIT, sizeLimit);
-                    }
-                }
-                captureIntent.putExtra(MediaStore.EXTRA_OUTPUT, videoUri);
-                captureIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                activity.startActivityForResult(captureIntent, VIDEO_CAPTURE_CODE);
-            }
+        if (mCaptureMachine == null) {
+            mCaptureMachine = CaptureMachine.from(activity);
         }
+        VideoConfig.Builder builder = new VideoConfig.Builder();
+        Bundle extras = activity.getIntent().getExtras();
+        if (extras != null) {
+            builder.setDurationLimit(extras.getInt(MediaPicker.DURATION_LIMIT, 0))
+                    .setSizeLimit(extras.getLong(MediaPicker.SIZE_LIMIT, 0))
+                    .setQuality(extras.getInt(MediaPicker.VIDEO_QUALITY, MediaConfig.DEFAULT_VIDEO_QUALITY));
+        }
+        mCaptureMachine.startVideoCapture(VIDEO_CAPTURE_CODE, builder.build());
     }
 
     public boolean isLoadImage() {
@@ -409,39 +340,9 @@ public class MediaPickerPresenter implements Handler.Callback {
     }
 
     public void onActivityResult(int requestCode, int resultCode) {
-        //拍照成功返回路径
-        if (requestCode == IMAGE_CAPTURE_CODE && resultCode == Activity.RESULT_OK && mPhotoPath != null) {
-            if (SDKVersionUtils.isAndroidQAbove()) {  //android Q
-                handleAndroidQ(mPhotoPath, mPhotoMimeType, false);
-            } else {
-                setCaptureResult(mPhotoPath);
-            }
-        } else if (requestCode == VIDEO_CAPTURE_CODE && resultCode == Activity.RESULT_OK && mVideoPath != null) {
-            if (SDKVersionUtils.isAndroidQAbove()) { //android Q
-                handleAndroidQ(mVideoPath, mVideoMimeType, true);
-            } else {
-                setCaptureResult(mVideoPath);
-            }
+        if (mCaptureMachine != null && requestCode == mCaptureMachine.getRequestCode() && resultCode == Activity.RESULT_OK) {
+            setCaptureResult(mCaptureMachine.getFilePath(), mCaptureMachine.getFileUri());
         }
-    }
-
-    private void handleAndroidQ(final String originPath, final String mimeType, final boolean isVideo) {
-        if (mCaptureResultHandler == null) {
-            mCaptureResultHandler = new Handler(Looper.getMainLooper(), this);
-        }
-        showLoading();
-        AsyncTask.SERIAL_EXECUTOR.execute(new Runnable() {
-            @Override
-            public void run() {
-                String path;
-                if (isVideo) {
-                    path = AndroidQTransformUtils.parseVideoPathToAndroidQ(activity, originPath, mimeType);
-                } else {
-                    path = AndroidQTransformUtils.parseImagePathToAndroidQ(activity, originPath, mimeType);
-                }
-                mCaptureResultHandler.sendMessage(mCaptureResultHandler.obtainMessage(CAPTURE_MSG_CODE, path));
-            }
-        });
     }
 
     private void showLoading() {
@@ -455,35 +356,24 @@ public class MediaPickerPresenter implements Handler.Callback {
         mLoadingDialog.show();
     }
 
-    @Override
-    public boolean handleMessage(@NonNull Message msg) {
-        hideLoading();
-        if (msg.what == CAPTURE_MSG_CODE) {
-            setCaptureResult((String) msg.obj);
-        }
-        return false;
-    }
-
     private void hideLoading() {
         if (mLoadingDialog != null) {
             mLoadingDialog.dismiss();
         }
     }
 
-    private void setCaptureResult(String filePath) {
-        if (MediaUtil.isFileExists(filePath)) {
-            activity.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
-                    MediaUtil.getProviderUri(activity, new File(filePath))));
-            ArrayList<MediaBean> imageBeans = new ArrayList<>();
-            imageBeans.add(new MediaBean(filePath, filePath));
-            setResult(Activity.RESULT_OK, imageBeans, true);
+    private void setCaptureResult(String filePath, Uri fileUri) {
+        if (MediaUtil.isFileExists(filePath) && fileUri != null) {
+            ArrayList<MediaBean> beanList = new ArrayList<>();
+            beanList.add(new MediaBean(filePath, fileUri));
+            setResult(Activity.RESULT_OK, beanList, true);
             activity.finish();
         }
     }
 
-    public void setResult(int resultCode, ArrayList<MediaBean> imageBeans, boolean isCameraImage) {
+    public void setResult(int resultCode, ArrayList<MediaBean> beanList, boolean isCameraImage) {
         Intent intent = new Intent();
-        intent.putParcelableArrayListExtra(MediaPicker.SELECT_RESULT, imageBeans);
+        intent.putParcelableArrayListExtra(MediaPicker.SELECT_RESULT, beanList);
         intent.putExtra(MediaPicker.IS_CAMERA_IMAGE, isCameraImage);
         activity.setResult(resultCode, intent);
     }
@@ -504,8 +394,8 @@ public class MediaPickerPresenter implements Handler.Callback {
             mLoadingDialog.dismiss();
             mLoadingDialog = null;
         }
-        if (mLocalMediaSource != null) {
-            mLocalMediaSource.release();
+        if (mLocalMediaMode != null) {
+            mLocalMediaMode.release();
         }
         MediaPicker.gcDisplacer();
     }

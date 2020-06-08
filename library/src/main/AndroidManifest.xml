@@ -25,10 +25,12 @@
 
         <activity
             android:name=".MediaPickerActivity"
-            android:launchMode="singleTop" />
+            android:configChanges="uiMode|orientation|screenSize|layoutDirection"
+            android:screenOrientation="portrait" />
 
         <activity
             android:name=".MediaPreviewActivity"
-            android:launchMode="singleTop" />
+            android:configChanges="uiMode|orientation|screenSize|layoutDirection"
+            android:screenOrientation="portrait" />
     </application>
 </manifest>

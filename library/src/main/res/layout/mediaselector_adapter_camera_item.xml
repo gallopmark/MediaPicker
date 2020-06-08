@@ -2,15 +2,18 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@color/default_background"
     android:layout_gravity="center"
     android:layout_margin="@dimen/dp_1">
 
-    <pony.xcode.media.widget.SquareImageView
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/tv_camera"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:drawableTop="@drawable/mediaselector_icon_camera"
+        android:drawablePadding="@dimen/dp_10"
         android:layout_gravity="center"
-        android:background="@color/default_background"
-        android:padding="@dimen/dp_20"
-        android:scaleType="center"
-        android:src="@drawable/mediaselector_icon_camera" />
+        android:text="@string/mediapicker_camera_image"
+        android:textColor="@color/white"
+        android:textSize="@dimen/sp_16" />
 </FrameLayout>

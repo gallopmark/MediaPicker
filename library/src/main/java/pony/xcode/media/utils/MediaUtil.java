@@ -30,26 +30,8 @@ import java.util.Locale;
 
 public class MediaUtil {
 
-    public static String toString(Object o) {
-        String value = "";
-        try {
-            value = o.toString();
-        } catch (Exception ignored) {
-        }
-        return value;
-    }
-
-    /**
-     * Java文件操作 获取文件扩展名
-     */
-    public static String getExtensionName(String filename) {
-        if (filename != null && filename.length() > 0) {
-            int dot = filename.lastIndexOf('.');
-            if (dot > -1 && dot < filename.length() - 1) {
-                return filename.substring(dot + 1);
-            }
-        }
-        return "";
+    private static String toString(long currentTime) {
+        return String.valueOf(currentTime);
     }
 
     /**
@@ -116,7 +98,6 @@ public class MediaUtil {
     @Nullable
     @TargetApi(Build.VERSION_CODES.Q)
     public static Uri createImageUri(final Context context) {
-        final Uri[] imageFilePath = {null};
         String status = Environment.getExternalStorageState();
         String time = toString(System.currentTimeMillis());
         // ContentValues是我们希望这条记录被创建时包含的数据信息
@@ -124,14 +105,15 @@ public class MediaUtil {
         values.put(MediaStore.Images.Media.DISPLAY_NAME, getCreateFileName("IMG_", MediaConfig.JPEG));
         values.put(MediaStore.Images.Media.DATE_TAKEN, time);
         values.put(MediaStore.Images.Media.MIME_TYPE, MediaConfig.MIME_TYPE_IMAGE);
+        Uri imageUri;
         // 判断是否有SD卡,优先使用SD卡存储,当没有SD卡时使用手机存储
         if (status.equals(Environment.MEDIA_MOUNTED)) {
             values.put(MediaStore.Images.Media.RELATIVE_PATH, MediaConfig.RELATIVE_PATH);
-            imageFilePath[0] = context.getContentResolver().insert(MediaStore.Images.Media.getContentUri("external"), values);
+            imageUri = context.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
         } else {
-            imageFilePath[0] = context.getContentResolver().insert(MediaStore.Images.Media.getContentUri("internal"), values);
+            imageUri = context.getContentResolver().insert(MediaStore.Images.Media.INTERNAL_CONTENT_URI, values);
         }
-        return imageFilePath[0];
+        return imageUri;
     }
 
     /**
@@ -142,7 +124,6 @@ public class MediaUtil {
     @Nullable
     @TargetApi(Build.VERSION_CODES.Q)
     public static Uri createVideoUri(final Context context) {
-        final Uri[] imageFilePath = {null};
         String status = Environment.getExternalStorageState();
         String time = toString(System.currentTimeMillis());
         // ContentValues是我们希望这条记录被创建时包含的数据信息
@@ -150,14 +131,15 @@ public class MediaUtil {
         values.put(MediaStore.Video.Media.DISPLAY_NAME, getCreateFileName("VID_", MediaConfig.MP4));
         values.put(MediaStore.Video.Media.DATE_TAKEN, time);
         values.put(MediaStore.Video.Media.MIME_TYPE, MediaConfig.MIME_TYPE_VIDEO);
+        Uri videoUri;
         // 判断是否有SD卡,优先使用SD卡存储,当没有SD卡时使用手机存储
         if (status.equals(Environment.MEDIA_MOUNTED)) {
             values.put(MediaStore.Video.Media.RELATIVE_PATH, MediaConfig.RELATIVE_PATH);
-            imageFilePath[0] = context.getContentResolver().insert(MediaStore.Video.Media.getContentUri("external"), values);
+            videoUri = context.getContentResolver().insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
         } else {
-            imageFilePath[0] = context.getContentResolver().insert(MediaStore.Video.Media.getContentUri("internal"), values);
+            videoUri = context.getContentResolver().insert(MediaStore.Video.Media.INTERNAL_CONTENT_URI, values);
         }
-        return imageFilePath[0];
+        return videoUri;
     }
 
     public static String getCreateFileName(String prefix, String suffix) {
@@ -255,7 +237,7 @@ public class MediaUtil {
                 final String[] split = docId.split(":");
                 final String type = split[0];
                 if ("primary".equalsIgnoreCase(type)) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    if (SDKVersionUtils.isAndroidQAbove()) {
                         return context.getExternalFilesDir(Environment.DIRECTORY_PICTURES) + "/" + split[1];
                     } else {
                         //noinspection deprecation
@@ -389,4 +371,30 @@ public class MediaUtil {
             }
         }
     }
+
+    /**
+     * 路径转Uri
+     * @param context 上下文
+     * @param path 文件路径
+     */
+    public static Uri getUri(Context context, String path) {
+        Uri contentUri = MediaStore.Files.getContentUri("external");
+        Cursor cursor = context.getContentResolver().query(contentUri,
+                new String[]{MediaStore.Files.FileColumns._ID}, MediaStore.Files.FileColumns.DATA + "=? ",
+                new String[]{path}, null);
+        if (cursor != null && cursor.moveToFirst()) {
+            int id = cursor.getInt(cursor.getColumnIndex(MediaStore.Files.FileColumns._ID));
+            cursor.close();
+            return ContentUris.withAppendedId(contentUri, id);
+        } else {
+            if (new File(path).exists()) {
+                ContentValues values = new ContentValues();
+                values.put(MediaStore.Files.FileColumns.DATA, path);
+                return context.getContentResolver().insert(contentUri, values);
+            } else {
+                return null;
+            }
+        }
+    }
+
 }
