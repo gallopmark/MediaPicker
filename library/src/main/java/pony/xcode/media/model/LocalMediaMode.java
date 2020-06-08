@@ -1,8 +1,8 @@
 package pony.xcode.media.model;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.ContentUris;
-import android.content.Context;
 import android.database.Cursor;
 
 import android.net.Uri;
@@ -19,11 +19,13 @@ import pony.xcode.media.MediaConfig;
 import pony.xcode.media.R;
 import pony.xcode.media.bean.MediaFolder;
 import pony.xcode.media.bean.MediaBean;
+import pony.xcode.media.utils.FileUtils;
 import pony.xcode.media.utils.MediaUtil;
 import pony.xcode.media.utils.SDKVersionUtils;
 import pony.xcode.media.utils.StringUtils;
 
 import java.io.File;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,97 +49,122 @@ public class LocalMediaMode implements Handler.Callback {
 
     private int mChooseMode;
     private Handler mHandler;
+    private WeakReference<Activity> mWeakCache;
     private OnCompleteListener mCompleteListener;
 
     /**
      * 从SDCard加载图片或视频
      */
-    public void loadMediaForSDCard(final Context context, final int mode, final OnCompleteListener listener) {
+    public void loadMediaForSDCard(final Activity activity, final int mode, final OnCompleteListener listener) {
         //由于扫描图片是耗时的操作，所以要在子线程处理。
         mChooseMode = mode;
+        mWeakCache = new WeakReference<>(activity);
         mHandler = new Handler(Looper.getMainLooper(), this);
         mCompleteListener = listener;
         mCompleteListener.onPreLoad();
+
         AsyncTask.SERIAL_EXECUTOR.execute(new Runnable() {
 
             @Override
             public void run() {
-                Cursor cursor = null;
                 try {
-                    ArrayList<MediaBean> beanList = new ArrayList<>();
-                    final Uri queryUri;
-                    final String[] projection;
-                    final String selection;
-                    final String sortOrder;
-                    if (mChooseMode == MediaConfig.MODE_VIDEO) {
-                        queryUri = VIDEO_URI;
-                        projection = getVideoProjection();
-                        selection = VIDEO_SELECTION;
-                        sortOrder = VIDEO_SORT_ORDER;
-                    } else {
-                        queryUri = IMAGE_URI;
-                        projection = getImageProjection();
-                        selection = IMAGE_SELECTION;
-                        sortOrder = IMAGE_SORT_ORDER;
+                    ArrayList<MediaBean> mediaBeans;
+                    if (mChooseMode == MediaConfig.MODE_VIDEO) { //获取视频
+                        mediaBeans = doQueryVideos();
+                    } else {  //默认为获取图片
+                        mediaBeans = doQueryImages();
                     }
-                    cursor = context.getContentResolver().query(queryUri, projection, selection, null, sortOrder);
-                    if (cursor != null) {
-                        if (mChooseMode == MediaConfig.MODE_VIDEO) { //获取视频
-                            while (cursor.moveToNext()) {
-                                long duration = cursor.getLong(cursor.getColumnIndex(projection[5]));
-                                long size = cursor.getLong(cursor.getColumnIndex(projection[6]));
-                                if (duration == 0 || size <= 0) {
-                                    // 时长如果为0，就当做损坏的视频处理过滤掉、视频大小为0过滤掉
-                                    continue;
-                                }
-                                long id = cursor.getLong(cursor.getColumnIndex(projection[0]));
-                                Uri uri = ContentUris.withAppendedId(queryUri, id);
-                                //android Q 以下为真实路径
-                                String path = cursor.getString(cursor.getColumnIndex(projection[1]));
-                                if (SDKVersionUtils.isAndroidQAbove()) {
-                                    path = MediaUtil.getPath(context, uri);
-                                }
-                                if (!MediaUtil.isFileExists(path)) {
-                                    continue;
-                                }
-                                String mimeType = cursor.getString(cursor.getColumnIndex(projection[2]));
-                                long time = cursor.getLong(cursor.getColumnIndex(projection[3]));
-                                String name = cursor.getString(cursor.getColumnIndex(projection[4]));
-                                beanList.add(new MediaBean(path, time, name, mimeType, duration, size, uri));
-                            }
-                        } else {  //默认为获取图片
-                            while (cursor.moveToNext()) {
-                                long size = cursor.getLong(cursor.getColumnIndex(projection[5]));
-                                if (size == 0) {
-                                    continue;
-                                }
-                                long id = cursor.getLong(cursor.getColumnIndex(projection[0]));
-                                //获取图片uri
-                                Uri uri = ContentUris.withAppendedId(queryUri, id);
-                                String path = cursor.getString(cursor.getColumnIndex(projection[1]));
-                                if (SDKVersionUtils.isAndroidQAbove()) {
-                                    path = MediaUtil.getPath(context, uri);
-                                }
-                                if (!MediaUtil.isFileExists(path)) {
-                                    continue;
-                                }
-                                String mimeType = cursor.getString(cursor.getColumnIndex(projection[2]));
-                                long time = cursor.getLong(cursor.getColumnIndex(projection[3]));
-                                String name = cursor.getString(cursor.getColumnIndex(projection[4]));
-                                beanList.add(new MediaBean(path, time, name, mimeType, size, uri));
-                            }
-                        }
-                    }
-                    mHandler.sendMessage(mHandler.obtainMessage(MSG_QUERY_MEDIA_SUCCESS, splitFolder(context, beanList)));
+                    mHandler.sendMessage(mHandler.obtainMessage(MSG_QUERY_MEDIA_SUCCESS, splitFolder(mWeakCache.get(), mediaBeans)));
                 } catch (Exception e) {
                     mHandler.sendEmptyMessage(MSG_QUERY_MEDIA_ERROR);
-                } finally {
-                    if (cursor != null) {
-                        cursor.close();
-                    }
                 }
             }
         });
+    }
+
+    private ArrayList<MediaBean> doQueryImages() {
+        Cursor cursor = null;
+        try {
+            Activity activity = mWeakCache.get();
+            if (activity == null) {
+                return new ArrayList<>();
+            }
+            final String[] projection = getImageProjection();
+            cursor = activity.getContentResolver().query(IMAGE_URI, getImageProjection(), IMAGE_SELECTION, null, IMAGE_SORT_ORDER);
+            if (cursor == null) return new ArrayList<>();
+            ArrayList<MediaBean> beanList = new ArrayList<>();
+            while (cursor.moveToNext()) {
+                if (mWeakCache.get() == null) {
+                    break;
+                }
+                long size = cursor.getLong(cursor.getColumnIndex(projection[5]));
+                if (size == 0) {
+                    continue;
+                }
+                long id = cursor.getLong(cursor.getColumnIndex(projection[0]));
+                //获取图片uri
+                Uri uri = ContentUris.withAppendedId(IMAGE_URI, id);
+                String path = cursor.getString(cursor.getColumnIndex(projection[1]));
+                if (SDKVersionUtils.isAndroidQAbove()) {
+                    path = FileUtils.getPath(activity, uri);
+                }
+                if (!MediaUtil.isFileExists(path)) {
+                    continue;
+                }
+                String mimeType = cursor.getString(cursor.getColumnIndex(projection[2]));
+                long time = cursor.getLong(cursor.getColumnIndex(projection[3]));
+                String name = cursor.getString(cursor.getColumnIndex(projection[4]));
+                beanList.add(new MediaBean(path, time, name, mimeType, size, uri));
+            }
+            return beanList;
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+    }
+
+    private ArrayList<MediaBean> doQueryVideos() {
+        Cursor cursor = null;
+        try {
+            Activity activity = mWeakCache.get();
+            if (activity == null) {
+                return new ArrayList<>();
+            }
+            final String[] projection = getVideoProjection();
+            cursor = activity.getContentResolver().query(VIDEO_URI, projection, VIDEO_SELECTION, null, VIDEO_SORT_ORDER);
+            if (cursor == null) {
+                return new ArrayList<>();
+            }
+            ArrayList<MediaBean> beanList = new ArrayList<>();
+            while (cursor.moveToNext()) {
+                long duration = cursor.getLong(cursor.getColumnIndex(projection[5]));
+                long size = cursor.getLong(cursor.getColumnIndex(projection[6]));
+                if (duration == 0 || size <= 0) {
+                    // 时长如果为0，就当做损坏的视频处理过滤掉、视频大小为0过滤掉
+                    continue;
+                }
+                long id = cursor.getLong(cursor.getColumnIndex(projection[0]));
+                Uri uri = ContentUris.withAppendedId(VIDEO_URI, id);
+                //android Q 以下为真实路径
+                String path = cursor.getString(cursor.getColumnIndex(projection[1]));
+                if (SDKVersionUtils.isAndroidQAbove()) {
+                    path = FileUtils.getPath(activity, uri);
+                }
+                if (!MediaUtil.isFileExists(path)) {
+                    continue;
+                }
+                String mimeType = cursor.getString(cursor.getColumnIndex(projection[2]));
+                long time = cursor.getLong(cursor.getColumnIndex(projection[3]));
+                String name = cursor.getString(cursor.getColumnIndex(projection[4]));
+                beanList.add(new MediaBean(path, time, name, mimeType, duration, size, uri));
+            }
+            return beanList;
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
     }
 
     @SuppressLint("InlinedApi")
@@ -167,9 +194,10 @@ public class LocalMediaMode implements Handler.Callback {
     /**
      * 把图片按文件夹拆分，第一个文件夹保存所有的图片
      */
-    private ArrayList<MediaFolder> splitFolder(Context context, ArrayList<MediaBean> images) {
+    private ArrayList<MediaFolder> splitFolder(Activity activity, ArrayList<MediaBean> images) {
         ArrayList<MediaFolder> folders = new ArrayList<>();
-        folders.add(new MediaFolder(context.getString(mChooseMode == 2 ? R.string.imagePicker_allVideos :
+        if (activity == null) return folders;
+        folders.add(new MediaFolder(activity.getString(mChooseMode == 2 ? R.string.imagePicker_allVideos :
                 R.string.imagePicker_allPictures), images));
         if (images != null && !images.isEmpty()) {
             int size = images.size();

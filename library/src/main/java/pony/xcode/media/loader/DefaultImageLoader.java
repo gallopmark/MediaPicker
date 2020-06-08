@@ -10,7 +10,6 @@ import androidx.annotation.NonNull;
 import com.bumptech.glide.Glide;
 
 import pony.xcode.media.bean.MediaBean;
-import pony.xcode.media.utils.SDKVersionUtils;
 
 import java.io.Serializable;
 
@@ -20,22 +19,16 @@ import java.io.Serializable;
 public class DefaultImageLoader implements ImageLoader, Serializable {
     @Override
     public void displayFolder(@NonNull Context context, @NonNull MediaBean bean, @NonNull ImageView target) {
-        Glide.with(context).load(SDKVersionUtils.isAndroidQAbove() ? bean.getUri() : bean.getPath())
-                .into(target);
+        Glide.with(context).load(bean.getLoadMode()).into(target);
     }
 
     @Override
     public void displayGrid(@NonNull Context context, @NonNull MediaBean bean, @NonNull ImageView target) {
-        Glide.with(context).load(SDKVersionUtils.isAndroidQAbove() ? bean.getUri() : bean.getPath())
-                .centerCrop()
-                .into(target);
+        Glide.with(context).load(bean.getLoadMode()).centerCrop().into(target);
     }
 
     @Override
     public void displayPager(@NonNull Context context, @NonNull MediaBean bean, @NonNull final ImageView target) {
-        Glide.with(context).asBitmap()
-                .load(SDKVersionUtils.isAndroidQAbove() ? bean.getUri() : bean.getPath())
-                .fitCenter()
-                .into(target);
+        Glide.with(context).asBitmap().load(bean.getLoadMode()).fitCenter().into(target);
     }
 }

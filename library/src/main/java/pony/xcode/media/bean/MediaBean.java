@@ -6,6 +6,7 @@ import android.os.Parcelable;
 import android.text.TextUtils;
 
 import pony.xcode.media.utils.DateUtils;
+import pony.xcode.media.utils.SDKVersionUtils;
 
 public class MediaBean implements Parcelable {
     private String path;
@@ -132,6 +133,14 @@ public class MediaBean implements Parcelable {
 
     public Uri getUri() {
         return uri;
+    }
+
+    public Object getLoadMode() {
+        if (SDKVersionUtils.isAndroidQAbove()) {
+            return uri;
+        } else {
+            return path;
+        }
     }
 
     /* 图片的路径和创建时间相同就认为是同一张图片*/

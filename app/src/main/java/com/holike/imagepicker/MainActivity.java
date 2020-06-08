@@ -18,7 +18,6 @@ import com.bumptech.glide.Glide;
 
 import pony.xcode.media.MediaPicker;
 import pony.xcode.media.bean.MediaBean;
-import pony.xcode.media.utils.MediaUtil;
 import pony.xcode.media.utils.SDKVersionUtils;
 
 import java.util.ArrayList;

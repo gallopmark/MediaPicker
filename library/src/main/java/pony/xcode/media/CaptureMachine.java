@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import java.io.File;
 
 import pony.xcode.media.utils.DialogUtils;
+import pony.xcode.media.utils.FileUtils;
 import pony.xcode.media.utils.MediaUtil;
 import pony.xcode.media.utils.SDKVersionUtils;
 
@@ -120,7 +121,7 @@ public class CaptureMachine {
     public String getFilePath() {
         String filePath;
         if (SDKVersionUtils.isAndroidQAbove()) {
-            filePath = MediaUtil.getPath(mActivity, mFileUri);
+            filePath = FileUtils.getPath(mActivity, mFileUri);
         } else {
             mActivity.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(new File(mFilePath))));
             filePath = mFilePath;
